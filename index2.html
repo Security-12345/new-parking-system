@@ -4,263 +4,234 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Rainbow Village</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0v4LLanw2qksYuRlEzO+tcaEPQogQ0KaoGN26/zrn20ImR1DfuLWnOo7aBA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" as="style">
   <style>
-    /* Reset and macOS Typography */
+    /* Custom Properties */
+    :root {
+      --primary-color: #0071e3;
+      --accent-color: #ff2d55;
+      --success-color: #34c759;
+      --warning-color: #ff9500;
+      --text-primary: #1c2526;
+      --text-secondary: #5e6d6e;
+      --bg-primary: rgba(255, 255, 255, 0.95);
+      --bg-dark: rgba(28, 32, 34, 0.9);
+      --shadow-light: 0 4px 12px rgba(0, 0, 0, 0.1);
+      --shadow-dark: 0 6px 20px rgba(0, 0, 0, 0.15);
+      --radius-sm: 10px;
+      --radius-lg: 20px;
+      --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      --rainbow-gradient: linear-gradient(135deg, #ff2d55, #ff9500, #34c759, #0071e3, #5856d6);
+    }
+
+    /* Reset and Base */
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: 'SF Pro Display', 'SF Pro Text', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-family: "SF Pro Display", -apple-system, BlinkMacSystemFont, sans-serif;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
     }
 
-    /* Body with macOS Background */
     body {
-      background: linear-gradient(120deg, #e8ecef, #d1d9e6);
-      color: #1d1d1f;
-      line-height: 1.5;
+      background: linear-gradient(135deg, #f0f4f8, #d9e2ec);
+      color: var(--text-primary);
+      line-height: 1.6;
       min-height: 100vh;
       overflow-x: hidden;
     }
 
-    /* Header with macOS Traffic Lights and Frosted Glass */
-    .header {
-      background: rgba(242, 242, 242, 0.85);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      padding: 0.8rem 1rem;
-      position: sticky;
-      top: 0;
+    /* Sidebar */
+    .sidebar {
+      position: fixed;
+      top: 2rem;
+      left: 2rem;
+      width: 280px;
+      background: var(--bg-primary);
+      backdrop-filter: blur(15px);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      box-shadow: var(--shadow-light);
       z-index: 10;
-      border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-    }
-
-    .header-content {
-      max-width: 1280px;
-      margin: 0 auto;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      position: relative;
-    }
-
-    /* macOS Traffic Lights */
-    .header::before {
-      content: '';
-      position: absolute;
-      left: 1rem;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 36px;
-      height: 12px;
-      background: 
-        radial-gradient(circle at 6px 6px, #ff453a 5px, transparent 6px),
-        radial-gradient(circle at 18px 6px, #ff9f0a 5px, transparent 6px),
-        radial-gradient(circle at 30px 6px, #32d74b 5px, transparent 6px);
-      background-repeat: no-repeat;
+      transition: transform var(--transition);
     }
 
     .logo {
       display: flex;
       align-items: center;
-      margin-left: 3rem;
+      margin-bottom: 2rem;
     }
 
     .logo i {
-      font-size: 1.8rem;
-      color: #1d1d1f;
-      margin-right: 0.6rem;
-      transition: transform 0.2s ease;
+      font-size: 2.5rem;
+      color: var(--primary-color);
+      margin-right: 0.75rem;
+      transition: transform var(--transition);
     }
 
-    .logo i:hover {
-      transform: scale(1.1);
+    .logo:hover i {
+      transform: rotate(15deg) scale(1.1);
     }
 
-    h1 {
-      font-size: 1.5rem;
-      font-weight: 600;
-      color: #1d1d1f;
-    }
-
-    .nav-toggle {
-      display: none;
-      background: none;
-      border: none;
-      font-size: 1.6rem;
-      color: #1d1d1f;
-      cursor: pointer;
+    .logo h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      background: var(--rainbow-gradient);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
     }
 
     .nav-menu {
-      display: flex;
-      gap: 0.5rem;
-    }
-
-    .nav-menu button {
-      background: rgba(255, 255, 255, 0.6);
-      border: 1px solid rgba(0, 0, 0, 0.1);
-      padding: 0.5rem 1rem;
-      color: #1d1d1f;
-      font-size: 0.95rem;
-      font-weight: 500;
-      cursor: pointer;
-      border-radius: 6px;
-      transition: all 0.2s ease;
-    }
-
-    .nav-menu button:hover {
-      background: #007aff;
-      color: #fff;
-      box-shadow: 0 2px 6px rgba(0, 122, 255, 0.3);
-    }
-
-    /* Main Content */
-    main {
-      min-height: calc(100vh - 60px);
-    }
-
-    .section {
-      padding: 2rem;
-      opacity: 0;
-      animation: slideIn 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) forwards;
-    }
-
-    .section.hidden {
-      display: none;
-    }
-
-    @keyframes slideIn {
-      from { opacity: 0; transform: translateY(15px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .container {
-      max-width: 1280px;
-      margin: 0 auto;
-      background: rgba(255, 255, 255, 0.9);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border-radius: 12px;
-      padding: 1.5rem;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-    }
-
-    h2 {
-      font-size: 2rem;
-      color: #1d1d1f;
-      font-weight: 600;
-      margin-bottom: 1rem;
-    }
-
-    p {
-      color: #6e6e73;
-      font-size: 1.1rem;
-      margin-bottom: 1.5rem;
-    }
-
-    /* Rules Container */
-    .rules-container {
       display: flex;
       flex-direction: column;
       gap: 0.75rem;
     }
 
-    .rule-section {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border-radius: 12px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-      overflow: hidden;
-      transition: all 0.2s ease;
-    }
-
-    .rule-section:hover {
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    }
-
-    .rule-section h3 {
-      font-size: 1.25rem;
-      color: #1d1d1f;
-      background: rgba(245, 245, 245, 0.8);
-      padding: 1rem;
+    .nav-menu button {
+      background: transparent;
+      border: 1px solid rgba(0, 113, 227, 0.2);
+      padding: 0.8rem 1.5rem;
+      color: var(--text-primary);
+      font-size: 1rem;
+      font-weight: 500;
+      border-radius: var(--radius-sm);
       cursor: pointer;
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      gap: 0.75rem;
+      transition: all var(--transition);
     }
 
-    .rule-section h3 i {
-      font-size: 0.9rem;
-      color: #007aff;
-      transition: transform 0.2s ease;
+    .nav-menu button i {
+      font-size: 1.2rem;
+      color: var(--text-secondary);
     }
 
-    .rule-section h3:hover i {
-      transform: rotate(180deg);
+    .nav-menu button:hover, .nav-menu button:focus {
+      background: var(--primary-color);
+      color: #fff;
+      border-color: var(--primary-color);
+      box-shadow: var(--shadow-dark);
+      outline: none;
     }
 
-    .rule-content {
-      padding: 1rem;
-      font-size: 1rem;
-      color: #6e6e73;
+    .nav-menu button:hover i, .nav-menu button:focus i {
+      color: #fff;
     }
 
-    .rule-content h4 {
-      font-size: 1.15rem;
-      color: #1d1d1f;
-      margin: 0.75rem 0 0.5rem;
+    /* Main Content */
+    main {
+      margin-left: 340px;
+      padding: 2rem;
+      min-height: calc(100vh - 4rem);
     }
 
-    .rule-content ul, .rule-content ol {
+    .hero {
+      background: var(--bg-dark);
+      backdrop-filter: blur(10px);
+      border-radius: var(--radius-lg);
+      padding: 3rem;
+      color: #fff;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow-dark);
+      animation: fadeIn 0.5s var(--transition);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero h2 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .hero p {
+      font-size: 1.2rem;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    /* Rules Grid */
+    .rules-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .rule-card {
+      background: var(--bg-primary);
+      backdrop-filter: blur(10px);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-light);
+      transition: transform var(--transition), box-shadow var(--transition);
+      max-height: 400px;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: var(--primary-color) transparent;
+    }
+
+    .rule-card:hover, .rule-card:focus-within {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-dark);
+    }
+
+    .rule-card h3 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .rule-card h3 i {
+      font-size: 1.25rem;
+      color: var(--primary-color);
+    }
+
+    .rule-card p, .rule-card ul, .rule-card ol {
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+    }
+
+    .rule-card ul, .rule-card ol {
       margin-left: 1.5rem;
-      margin-bottom: 1rem;
+      margin-top: 0.5rem;
     }
 
-    .rule-content ul {
+    .rule-card ul {
       list-style: disc;
     }
 
-    .rule-content ol {
+    .rule-card ol {
       list-style: decimal;
     }
 
-    .rule-content li {
+    .rule-card li {
       margin-bottom: 0.4rem;
     }
 
-    .rule-content strong {
-      color: #007aff;
+    .rule-card strong {
+      color: var(--primary-color);
     }
 
-    /* Buttons */
-    .btn-primary {
-      background: #007aff;
-      color: #fff;
-      padding: 0.7rem 1.5rem;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 1rem;
-      font-weight: 600;
-      transition: all 0.2s ease;
-    }
-
-    .btn-primary:hover {
-      background: #005bb5;
-      box-shadow: 0 2px 8px rgba(0, 91, 181, 0.3);
-    }
-
-    .permit-actions {
-      display: flex;
-      justify-content: center;
-      gap: 1rem;
-      margin-top: 1.5rem;
+    /* Footer */
+    footer {
+      margin-left: 340px;
+      padding: 2rem;
+      text-align: center;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      background: var(--bg-primary);
+      backdrop-filter: blur(10px);
+      border-top: 1px solid rgba(0, 0, 0, 0.1);
     }
 
     /* Modal */
@@ -270,7 +241,7 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.4);
+      background: rgba(0, 0, 0, 0.6);
       display: flex;
       justify-content: center;
       align-items: center;
@@ -278,20 +249,19 @@
     }
 
     .modal-content {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      padding: 1.5rem;
-      border-radius: 14px;
-      max-width: 600px;
+      background: var(--bg-primary);
+      backdrop-filter: blur(15px);
+      padding: 2rem;
+      border-radius: var(--radius-lg);
+      max-width: 700px;
       max-height: 85vh;
       overflow-y: auto;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
-      animation: modalIn 0.3s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+      box-shadow: var(--shadow-dark);
+      animation: popIn 0.3s var(--transition);
     }
 
-    @keyframes modalIn {
-      from { transform: scale(0.95); opacity: 0; }
+    @keyframes popIn {
+      from { transform: scale(0.9); opacity: 0; }
       to { transform: scale(1); opacity: 1; }
     }
 
@@ -299,327 +269,323 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 1rem;
+      margin-bottom: 1.5rem;
     }
 
     .modal-header h2 {
-      font-size: 1.75rem;
-      color: #1d1d1f;
+      font-size: 2rem;
       font-weight: 600;
+      background: var(--rainbow-gradient);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
     }
 
     .modal-header button {
       background: none;
       border: none;
-      font-size: 1.2rem;
-      color: #6e6e73;
+      font-size: 1.75rem;
+      color: var(--text-secondary);
       cursor: pointer;
-      transition: color 0.2s ease;
+      transition: color var(--transition);
     }
 
-    .modal-header button:hover {
-      color: #ff453a;
+    .modal-header button:hover, .modal-header button:focus {
+      color: var(--accent-color);
+      outline: none;
     }
 
     .modal-body p, .modal-body li {
       font-size: 1rem;
-      color: #6e6e73;
+      color: var(--text-secondary);
       margin-bottom: 0.75rem;
     }
 
     .modal-body ul {
       list-style: disc;
-      margin-left: 1.5rem;
+      margin-left: 1.75rem;
     }
 
     /* Toast */
     .toast {
       position: fixed;
-      bottom: 1rem;
-      right: 1rem;
-      padding: 0.6rem 1.2rem;
-      border-radius: 6px;
+      bottom: 2rem;
+      right: 2rem;
+      padding: 0.75rem 1.5rem;
+      border-radius: var(--radius-sm);
       color: #fff;
-      font-size: 0.95rem;
+      font-size: 1rem;
       z-index: 30;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-      transition: all 0.3s ease;
+      box-shadow: var(--shadow-dark);
+      animation: slideUp 0.3s var(--transition);
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(100px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
     }
 
     .toast.success {
-      background: #32d74b;
+      background: var(--success-color);
     }
 
     .toast.error {
-      background: #ff453a;
+      background: var(--accent-color);
     }
 
+    /* Utility */
     .hidden {
       display: none;
     }
 
     /* Responsive Design */
-    @media (max-width: 768px) {
-      .header-content {
-        flex-wrap: wrap;
-        gap: 0.75rem;
-      }
-      .header::before {
-        left: 0.5rem;
-      }
-      .logo {
-        margin-left: 2.5rem;
-      }
-      .nav-toggle {
-        display: block;
-      }
-      .nav-menu {
-        display: none;
-        flex-direction: column;
+    @media (max-width: 1024px) {
+      .sidebar {
+        position: static;
         width: 100%;
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        position: absolute;
-        top: 100%;
-        left: 0;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        margin: 0 0 2rem 0;
+        border-radius: 0;
+        padding: 1.5rem;
       }
-      .nav-menu.active {
-        display: flex;
+
+      main, footer {
+        margin-left: 0;
       }
-      .nav-menu button {
-        width: 100%;
-        text-align: left;
-        padding: 0.8rem;
-      }
-      .section {
-        padding: 1rem;
+
+      .rules-grid {
+        grid-template-columns: 1fr;
       }
     }
 
-    @media (max-width: 480px) {
-      .btn-primary {
-        padding: 0.6rem 1rem;
+    @media (max-width: 768px) {
+      .hero {
+        padding: 2rem;
       }
-      .rule-content {
-        padding: 0.8rem;
+
+      .hero h2 {
+        font-size: 2rem;
       }
+
+      .hero p {
+        font-size: 1rem;
+      }
+
+      .rule-card {
+        padding: 1.25rem;
+        max-height: none; /* Allow full expansion on small screens */
+      }
+
       .modal-content {
-        padding: 1rem;
+        padding: 1.5rem;
         max-width: 90%;
       }
+
+      .toast {
+        bottom: 1rem;
+        right: 1rem;
+        left: 1rem;
+        text-align: center;
+      }
+    }
+
+    /* Accessibility */
+    button:focus {
+      outline: 2px solid var(--primary-color);
+      outline-offset: 2px;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--primary-color);
+      border-radius: 3px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--accent-color);
     }
   </style>
 </head>
 <body>
-  <header class="header">
-    <div class="header-content">
-      <div class="logo">
-        <i class="fas fa-home"></i>
-        <h1>Rainbow Village</h1>
-      </div>
-      <button class="nav-toggle" onclick="toggleNav()">☰</button>
-      <nav class="nav-menu">
-        <button onclick="window.location.href='index.html'">Permits</button>
-        <button onclick="showSection('rules')">Rules</button>
-        <button onclick="openModal('about')">About</button>
-        <button onclick="openModal('contacts')">Contacts</button>
-      </nav>
+  <aside class="sidebar" role="navigation" aria-label="Main Navigation">
+    <div class="logo">
+      <i class="fas fa-rainbow" aria-hidden="true"></i>
+      <h1>Rainbow Village</h1>
     </div>
-  </header>
+    <nav class="nav-menu">
+      <button onclick="window.location.href='index.html'"><i class="fas fa-ticket-alt" aria-hidden="true"></i> Permits</button>
+      <button onclick="scrollToRules()"><i class="fas fa-book" aria-hidden="true"></i> Rules</button>
+      <button onclick="openModal('about')"><i class="fas fa-info-circle" aria-hidden="true"></i> About</button>
+      <button onclick="openModal('contacts')"><i class="fas fa-phone" aria-hidden="true"></i> Contacts</button>
+    </nav>
+  </aside>
 
-  <main>
-    <section id="rules" class="section active">
-      <div class="container">
-        <h2>Community Rules & Information</h2>
-        <p>Guidelines for a harmonious Rainbow Village</p>
-        <div class="rules-container">
-          <div class="rule-section">
-            <h3 onclick="toggleRule(this)">Coronavirus Guidelines <i class="fas fa-chevron-down"></i></h3>
-            <div class="rule-content">
-              <ul>
-                <li><strong>Symptom Monitoring:</strong> Watch for fever, cough, shortness of breath, sore throat, difficulty breathing, or loss of taste/smell.</li>
-                <li><strong>Self-Isolation:</strong> Self-isolate if sick after travel or exposure; seek medical care if symptoms worsen.</li>
-                <li><strong>Protective Measures:</strong> Wash hands frequently, avoid touching face, cough into elbow.</li>
-                <li><strong>Travel Restrictions:</strong> Self-isolate for 14 days after returning from outside Canada; seek medical care if needed.</li>
-                <li><strong>Emergency Contact:</strong> Toronto Public Health (416-392-1250) or a medical practitioner.</li>
-              </ul>
-            </div>
-          </div>
+  <main role="main">
+    <section class="hero" aria-label="Welcome Section">
+      <h2>Welcome to Rainbow Village</h2>
+      <p>A vibrant community where harmony and respect shine.</p>
+    </section>
 
-          <div class="rule-section">
-            <h3 onclick="toggleRule(this)">Party Room Rental <i class="fas fa-chevron-down"></i></h3>
-            <div class="rule-content hidden">
-              <p><strong>Rooms:</strong> Gathering Place A or B (up to 40 people)</p>
-              <p><strong>Cost:</strong> $75 to rent, $250 deposit (cheques to MTCC 929 for A, 936 for B)</p>
-              <p><strong>Time:</strong> Ends at midnight, clean by 12:30 AM</p>
-              <h4>Easy Rules:</h4>
-              <ol>
-                <li>Up to 40 guests allowed by city rules.</li>
-                <li>Only residents can book the room.</li>
-                <li>You pay for any damage to the room or property.</li>
-                <li>Keep your guests well-behaved, or we’ll step in.</li>
-                <li>Pay $75 to rent and $250 deposit when booking. Deposit back in 3 days if no issues.</li>
-                <li>Give a guest list and car plates 1 day before, or the event’s off.</li>
-                <li>You cover any legal issues or injuries; we’re not responsible.</li>
-                <li>We don’t cover lost items or injuries.</li>
-                <li>No decorations on walls—damage comes out of your deposit or bill.</li>
-                <li>No tape, glue, nails, or pins on walls or ceiling.</li>
-                <li>Stay in the rented room; no other areas allowed.</li>
-                <li>You guide guests—no signs or open doors.</li>
-                <li>Get any permits (like for alcohol) yourself and show us before.</li>
-                <li>Cancel 7 days ahead, or pay $100.</li>
-                <li>No smoking inside.</li>
-                <li>No selling tickets; only family events like birthdays (no bachelor parties).</li>
-                <li>Clean up before your time ends.</li>
-                <li>No bookings on Christmas Eve, Christmas, New Year’s Eve, or New Year’s Day.</li>
-                <li>Keep furniture off the dance floor.</li>
-                <li>Guests park at P1 garage—not under daycare or recreation center (fire rules).</li>
-              </ol>
-              <p><strong>If You Stay Late:</strong> $100 fine until 1:30 AM, $200 after (1 AM is the latest).</p>
-            </div>
-          </div>
+    <section id="rules" class="rules-grid" aria-label="Community Rules">
+      <div class="rule-card" tabindex="0">
+        <h3><i class="fas fa-virus" aria-hidden="true"></i> Coronavirus Guidelines</h3>
+        <ul>
+          <li><strong>Symptom Monitoring:</strong> Watch for fever, cough, shortness of breath, sore throat, difficulty breathing, or loss of taste/smell.</li>
+          <li><strong>Self-Isolation:</strong> Self-isolate if sick after travel or exposure; seek medical care if symptoms worsen.</li>
+          <li><strong>Protective Measures:</strong> Wash hands frequently, avoid touching face, cough into elbow.</li>
+          <li><strong>Travel Restrictions:</strong> Self-isolate for 14 days after returning from outside Canada; seek medical care if needed.</li>
+          <li><strong>Emergency Contact:</strong> Toronto Public Health (416-392-1250) or a medical practitioner.</li>
+        </ul>
+      </div>
 
-          <div class="rule-section">
-            <h3 onclick="toggleRule(this)">Rainbow Lounge Rental <i class="fas fa-chevron-down"></i></h3>
-            <div class="rule-content hidden">
-              <p><strong>Room:</strong> Rainbow Lounge (up to 60 people)</p>
-              <p><strong>Cost:</strong> $150 (Mon-Thu) or $225 (Fri-Sun/holidays), $500 deposit, $25/hr security (min 4 hrs), $25 garbage (cheques to Rainbow Village)</p>
-              <p><strong>Time:</strong> Ends at midnight, clean by 12:30 AM</p>
-              <h4>Easy Rules:</h4>
-              <ol>
-                <li>Up to 60 guests allowed.</li>
-                <li>Only residents can book—no outsiders, or lose $500 and booking rights.</li>
-                <li>Pay rental, $500 deposit, and security fee when booking. Deposit back in 3 days if no issues.</li>
-                <li>You need a security guard: $25/hr (or $50/hr on holidays), at least 4 hrs, paid from start to cleanup.</li>
-                <li>Pay $25 for garbage; take it to your building’s trash room, or pay extra.</li>
-                <li>You clean up after the event.</li>
-                <li>Book 7 days to 6 months ahead. Cancel 48 hrs before, or lose your fee.</li>
-                <li>Give a guest list (max 60) 4 days before.</li>
-                <li>Guests park at P1 garage—not under daycare or recreation center (fire rules).</li>
-                <li>Security opens P1 door. You greet guests at stairs (no 3rd floor Building B entry, except seniors/disabled with notice).</li>
-              </ol>
-            </div>
-          </div>
+      <div class="rule-card" tabindex="0">
+        <h3><i class="fas fa-party-horn" aria-hidden="true"></i> Party Room Rental</h3>
+        <p><strong>Rooms:</strong> Gathering Place A or B (up to 40 people)</p>
+        <p><strong>Cost:</strong> $75 to rent, $250 deposit (cheques to MTCC 929 for A, 936 for B)</p>
+        <p><strong>Time:</strong> Ends at midnight, clean by 12:30 AM</p>
+        <h4>Easy Rules:</h4>
+        <ol>
+          <li>Up to 40 guests allowed by city rules.</li>
+          <li>Only residents can book the room.</li>
+          <li>You pay for any damage to the room or property.</li>
+          <li>Keep your guests well-behaved, or we’ll step in.</li>
+          <li>Pay $75 to rent and $250 deposit when booking. Deposit back in 3 days if no issues.</li>
+          <li>Give a guest list and car plates 1 day before, or the event’s off.</li>
+          <li>You cover any legal issues or injuries; we’re not responsible.</li>
+          <li>We don’t cover lost items or injuries.</li>
+          <li>No decorations on walls—damage comes out of your deposit or bill.</li>
+          <li>No tape, glue, nails, or pins on walls or ceiling.</li>
+          <li>Stay in the rented room; no other areas allowed.</li>
+          <li>You guide guests—no signs or open doors.</li>
+          <li>Get any permits (like for alcohol) yourself and show us before.</li>
+          <li>Cancel 7 days ahead, or pay $100.</li>
+          <li>No smoking inside.</li>
+          <li>No selling tickets; only family events like birthdays (no bachelor parties).</li>
+          <li>Clean up before your time ends.</li>
+          <li>No bookings on Christmas Eve, Christmas, New Year’s Eve, or New Year’s Day.</li>
+          <li>Keep furniture off the dance floor.</li>
+          <li>Guests park at P1 garage—not under daycare or recreation center (fire rules).</li>
+        </ol>
+        <p><strong>If You Stay Late:</strong> $100 fine until 1:30 AM, $200 after (1 AM is the latest).</p>
+      </div>
 
-          <div class="rule-section">
-            <h3 onclick="toggleRule(this)">Elevator Booking <i class="fas fa-chevron-down"></i></h3>
-            <div class="rule-content hidden">
-              <p><strong>Use:</strong> Moving in/out, deliveries, renovations</p>
-              <p><strong>Fees:</strong></p>
-              <ul>
-                <li>Move In (Partial/Complete): $300 (Draft) + $50 (Cheque) - Max 3 hrs</li>
-                <li>Move Out (Complete): $300 (Draft) + $50 (Draft) - Max 3 hrs</li>
-                <li>Move Out (Partial): $300 (Draft) + $50 (Cheque) - Max 3 hrs</li>
-                <li>Deliveries: $300 (Cheque) - Max 4 hrs</li>
-                <li>Renovation: $300 (Cheque) - Max 2 hrs (Mon-Fri)</li>
-              </ul>
-              <p><strong>Note:</strong> No bookings on Sundays (except last Sunday of the month) or statutory holidays.</p>
-            </div>
-          </div>
+      <div class="rule-card" tabindex="0">
+        <h3><i class="fas fa-couch" aria-hidden="true"></i> Rainbow Lounge Rental</h3>
+        <p><strong>Room:</strong> Rainbow Lounge (up to 60 people)</p>
+        <p><strong>Cost:</strong> $150 (Mon-Thu) or $225 (Fri-Sun/holidays), $500 deposit, $25/hr security (min 4 hrs), $25 garbage (cheques to Rainbow Village)</p>
+        <p><strong>Time:</strong> Ends at midnight, clean by 12:30 AM</p>
+        <h4>Easy Rules:</h4>
+        <ol>
+          <li>Up to 60 guests allowed.</li>
+          <li>Only residents can book—no outsiders, or lose $500 and booking rights.</li>
+          <li>Pay rental, $500 deposit, and security fee when booking. Deposit back in 3 days if no issues.</li>
+          <li>You need a security guard: $25/hr (or $50/hr on holidays), at least 4 hrs, paid from start to cleanup.</li>
+          <li>Pay $25 for garbage; take it to your building’s trash room, or pay extra.</li>
+          <li>You clean up after the event.</li>
+          <li>Book 7 days to 6 months ahead. Cancel 48 hrs before, or lose your fee.</li>
+          <li>Give a guest list (max 60) 4 days before.</li>
+          <li>Guests park at P1 garage—not under daycare or recreation center (fire rules).</li>
+          <li>Security opens P1 door. You greet guests at stairs (no 3rd floor Building B entry, except seniors/disabled with notice).</li>
+        </ol>
+      </div>
 
-          <div class="rule-section">
-            <h3 onclick="toggleRule(this)">Recreation ID Card <i class="fas fa-chevron-down"></i></h3>
-            <div class="rule-content hidden">
-              <p><strong>Cost:</strong> Free for owners, $10 for tenants (2 photos, cheque or cash to Rainbow Village)</p>
-              <h4>Easy Rules:</h4>
-              <ol>
-                <li>Use the rec centre at your own risk.</li>
-                <li>Only use equipment inside; you pay if it breaks or someone gets hurt.</li>
-                <li>Pay for any damage or loss you or your guests cause.</li>
-                <li>Parents cover kids under 16—the same rules apply.</li>
-                <li>Break rules, and you lose rec centre access.</li>
-                <li>Bring your ID card every time, or you’ll be asked to leave.</li>
-              </ol>
-            </div>
-          </div>
+      <div class="rule-card" tabindex="0">
+        <h3><i class="fas fa-elevator" aria-hidden="true"></i> Elevator Booking</h3>
+        <p><strong>Use:</strong> Moving in/out, deliveries, renovations</p>
+        <p><strong>Fees:</strong></p>
+        <ul>
+          <li>Move In (Partial/Complete): $300 (Draft) + $50 (Cheque) - Max 3 hrs</li>
+          <li>Move Out (Complete): $300 (Draft) + $50 (Draft) - Max 3 hrs</li>
+          <li>Move Out (Partial): $300 (Draft) + $50 (Cheque) - Max 3 hrs</li>
+          <li>Deliveries: $300 (Cheque) - Max 4 hrs</li>
+          <li>Renovation: $300 (Cheque) - Max 2 hrs (Mon-Fri)</li>
+        </ul>
+        <p><strong>Note:</strong> No bookings on Sundays (except last Sunday of the month) or statutory holidays.</p>
+      </div>
 
-          <div class="rule-section">
-            <h3 onclick="toggleRule(this)">Parking Rules <i class="fas fa-chevron-down"></i></h3>
-            <div class="rule-content hidden">
-              <ul>
-                <li><strong>Visitor Parking:</strong> Visitors must park at the P1 visitor garage level.</li>
-                <li><strong>Prohibited Parking:</strong> Ground floor parking near the recreation center is prohibited per fire code.</li>
-                <li><strong>Daycare Parking:</strong> Reserved for management, daycare staff, contractors, and delivery drivers.</li>
-                <li><strong>Capacity:</strong> Parking is first-come, first-served.</li>
-              </ul>
-            </div>
-          </div>
+      <div class="rule-card" tabindex="0">
+        <h3><i class="fas fa-id-card" aria-hidden="true"></i> Recreation ID Card</h3>
+        <p><strong>Cost:</strong> Free for owners, $10 for tenants (2 photos, cheque or cash to Rainbow Village)</p>
+        <h4>Easy Rules:</h4>
+        <ol>
+          <li>Use the rec centre at your own risk.</li>
+          <li>Only use equipment inside; you pay if it breaks or someone gets hurt.</li>
+          <li>Pay for any damage or loss you or your guests cause.</li>
+          <li>Parents cover kids under 16—the same rules apply.</li>
+          <li>Break rules, and you lose rec centre access.</li>
+          <li>Bring your ID card every time, or you’ll be asked to leave.</li>
+        </ol>
+      </div>
 
-          <div class="rule-section">
-            <h3 onclick="toggleRule(this)">Pet Management <i class="fas fa-chevron-down"></i></h3>
-            <div class="rule-content hidden">
-              <ul>
-                <li><strong>No Common Area Mess:</strong> Pets must not urinate or defecate in common areas.</li>
-                <li><strong>Clean-Up:</strong> Residents must clean up after pets immediately. Failure results in a $250 charge.</li>
-                <li><strong>Reporting:</strong> Report violations to gatehouse security or management.</li>
-              </ul>
-            </div>
-          </div>
+      <div class="rule-card" tabindex="0">
+        <h3><i class="fas fa-parking" aria-hidden="true"></i> Parking Rules</h3>
+        <ul>
+          <li><strong>Visitor Parking:</strong> Visitors must park at the P1 visitor garage level.</li>
+          <li><strong>Prohibited Parking:</strong> Ground floor parking near the recreation center is prohibited per fire code.</li>
+          <li><strong>Daycare Parking:</strong> Reserved for management, daycare staff, contractors, and delivery drivers.</li>
+          <li><strong>Capacity:</strong> Parking is first-come, first-served.</li>
+        </ul>
+      </div>
 
-          <div class="rule-section">
-            <h3 onclick="toggleRule(this)">Utility Conservation and Oil Disposal <i class="fas fa-chevron-down"></i></h3>
-            <div class="rule-content hidden">
-              <ul>
-                <li><strong>Energy Conservation:</strong> Use high-efficiency bulbs. Turn off lights when leaving.</li>
-                <li><strong>Water Conservation:</strong> Report leaky faucets immediately.</li>
-                <li><strong>Oil Disposal:</strong> Dispose of cooking oil in the oil collection drum outside the recycling room.</li>
-                <li><strong>Financial Impact:</strong> Higher utility use increases maintenance fees.</li>
-              </ul>
-            </div>
-          </div>
+      <div class="rule-card" tabindex="0">
+        <h3><i class="fas fa-paw" aria-hidden="true"></i> Pet Management</h3>
+        <ul>
+          <li><strong>No Common Area Mess:</strong> Pets must not urinate or defecate in common areas.</li>
+          <li><strong>Clean-Up:</strong> Residents must clean up after pets immediately. Failure results in a $250 charge.</li>
+          <li><strong>Reporting:</strong> Report violations to gatehouse security or management.</li>
+        </ul>
+      </div>
 
-          <div class="rule-section">
-            <h3 onclick="toggleRule(this)">Community Guidelines <i class="fas fa-chevron-down"></i></h3>
-            <div class="rule-content hidden">
-              <h4>Easy Rules:</h4>
-              <ul>
-                <li>Do not leave packages at the gatehouse without approval.</li>
-                <li>No sitting, food, drink, bicycles, or roller blades in the Rainbow Bridge area.</li>
-                <li>No noise or nuisance disturbing others.</li>
-                <li>Recreation Centre hours: 9:00 AM to 11:00 PM.</li>
-                <li>Guests must be signed in by residents at gatehouse security.</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-        <div class="permit-actions">
-          <button class="btn-primary" onclick="openModal('contacts')">Contact Us</button>
-        </div>
+      <div class="rule-card" tabindex="0">
+        <h3><i class="fas fa-leaf" aria-hidden="true"></i> Utility Conservation and Oil Disposal</h3>
+        <ul>
+          <li><strong>Energy Conservation:</strong> Use high-efficiency bulbs. Turn off lights when leaving.</li>
+          <li><strong>Water Conservation:</strong> Report leaky faucets immediately.</li>
+          <li><strong>Oil Disposal:</strong> Dispose of cooking oil in the oil collection drum outside the recycling room.</li>
+          <li><strong>Financial Impact:</strong> Higher utility use increases maintenance fees.</li>
+        </ul>
+      </div>
+
+      <div class="rule-card" tabindex="0">
+        <h3><i class="fas fa-users" aria-hidden="true"></i> Community Guidelines</h3>
+        <h4>Easy Rules:</h4>
+        <ul>
+          <li>Do not leave packages at the gatehouse without approval.</li>
+          <li>No sitting, food, drink, bicycles, or roller blades in the Rainbow Bridge area.</li>
+          <li>No noise or nuisance disturbing others.</li>
+          <li>Recreation Centre hours: 9:00 AM to 11:00 PM.</li>
+          <li>Guests must be signed in by residents at gatehouse security.</li>
+        </ul>
       </div>
     </section>
   </main>
 
-  <div id="modal" class="modal hidden">
+  <footer role="contentinfo">
+    <p>© 2025 Rainbow Village. All rights reserved by Jagroop Singh / Punjab Production.</p>
+  </footer>
+
+  <div id="modal" class="modal hidden" role="dialog" aria-labelledby="modalTitle">
     <div class="modal-content">
       <div class="modal-header">
         <h2 id="modalTitle"></h2>
-        <button onclick="closeModal()"><i class="fas fa-times"></i></button>
+        <button onclick="closeModal()" aria-label="Close Modal"><i class="fas fa-times" aria-hidden="true"></i></button>
       </div>
       <div id="modalBody" class="modal-body"></div>
     </div>
   </div>
 
-  <div id="toast" class="toast hidden"></div>
+  <div id="toast" class="toast hidden" role="alert" aria-live="polite"></div>
 
   <script defer>
-    function showSection(sectionId) {
-      document.querySelectorAll('.section').forEach(s => s.classList.add('hidden'));
-      document.getElementById(sectionId).classList.remove('hidden');
-      document.querySelector('.nav-menu').classList.remove('active');
-    }
-
-    function toggleNav() {
-      document.querySelector('.nav-menu').classList.toggle('active');
-    }
-
-    function toggleRule(header) {
-      const content = header.nextElementSibling;
-      content.classList.toggle('hidden');
-      const icon = header.querySelector('i');
-      icon.classList.toggle('fa-chevron-down');
-      icon.classList.toggle('fa-chevron-up');
+    function scrollToRules() {
+      document.getElementById('rules').scrollIntoView({ behavior: 'smooth' });
     }
 
     function openModal(type) {
@@ -630,11 +596,11 @@
       if (type === 'about') {
         title.textContent = 'About Rainbow Village';
         body.innerHTML = `
-          <p>Rainbow Village is a vibrant community committed to fostering a safe, enjoyable, and respectful environment for all residents.</p>
-          <p>These rules ensure harmony and fairness across our shared spaces.</p>
+          <p>Welcome to Rainbow Village—a community where diversity thrives and respect binds us together.</p>
+          <p>Our rules ensure a safe, vibrant space for all residents.</p>
         `;
       } else if (type === 'contacts') {
-        title.textContent = 'Contacts';
+        title.textContent = 'Contact Information';
         body.innerHTML = `
           <ul>
             <li><strong>Aidin Gelal (Super, 2466):</strong> 416-912-0500</li>
@@ -648,9 +614,9 @@
             <li><strong>SMS Emergency:</strong> 416-360-1902</li>
             <li><strong>Toronto Public Health:</strong> 416-392-1250</li>
           </ul>
-          <p>For emergencies or urgent issues, contact the appropriate number above.</p>
         `;
       }
+      modal.focus();
     }
 
     function closeModal() {
@@ -665,15 +631,12 @@
       setTimeout(() => toast.classList.add('hidden'), 3000);
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-      const ruleSections = document.querySelectorAll('.rule-section');
-      ruleSections.forEach((section, index) => {
-        if (index !== 0) {
-          section.querySelector('.rule-content').classList.add('hidden');
-          section.querySelector('i').classList.remove('fa-chevron-up');
-          section.querySelector('i').classList.add('fa-chevron-down');
-        }
-      });
+    // Keyboard Navigation for Modal
+    document.addEventListener('keydown', (e) => {
+      const modal = document.getElementById('modal');
+      if (modal && !modal.classList.contains('hidden') && e.key === 'Escape') {
+        closeModal();
+      }
     });
   </script>
 </body>
