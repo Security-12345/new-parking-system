@@ -23,16 +23,18 @@
 
     <div class="layout">
         <aside class="sidebar">
-            <nav class="sidebar-menu">
-                <button class="active" onclick="showSection('dashboard')"><i class="fas fa-tachometer-alt"></i> Dashboard</button>
-                <button onclick="showSection('permits')"><i class="fas fa-ticket-alt"></i> Permit Management</button>
-                <button onclick="showSection('unit-search')"><i class="fas fa-search"></i> Unit Search</button>
-                <button onclick="showSection('report')"><i class="fas fa-exclamation-circle"></i> Report Issue</button>
-                <button onclick="showSection('about')"><i class="fas fa-info-circle"></i> About</button>
-                <button onclick="window.location.href='index2.html'"><i class="fas fa-book"></i> Site Rules</button>
-            </nav>
-            <div class="copyright">© 2025 Jagroop Singh<br>All rights reserved</div>
-        </aside>
+    <nav class="sidebar-menu">
+        <button class="active" onclick="showSection('dashboard')"><i class="fas fa-tachometer-alt"></i> Dashboard</button>
+        <button onclick="showSection('permits')"><i class="fas fa-ticket-alt"></i> Permit Management</button>
+        <button onclick="showSection('unit-search')"><i class="fas fa-search"></i> Unit Search</button>
+        <button onclick="showSection('report')"><i class="fas fa-exclamation-circle"></i> Report Issue</button>
+        <button onclick="showSection('about')"><i class="fas fa-info-circle"></i> About</button>
+        <button onclick="window.location.href='index2.html'"><i class="fas fa-book"></i> Site Rules</button>
+        <!-- New Generate Report Button -->
+        <button onclick="window.location.href='report-generator.html'"><i class="fas fa-file-pdf"></i> Generate Report</button>
+    </nav>
+    <div class="copyright">© 2025 Jagroop Singh<br>All rights reserved</div>
+</aside>
 
         <main class="main-content">
             <section id="dashboard" class="section active">
@@ -60,16 +62,15 @@
                     </div>
                     <div class="updates-section">
                         <h3>Latest Updates</h3>
-                        <div id="updatesList" class="updates-list"></div>
-                        <div id="addUpdateForm" class="hidden">
-                            <h4>Add New Update (Admin Only)</h4>
-                            <form id="updateForm" onsubmit="addUpdate(event)">
-                                <div class="search-group">
-                                    <label>Update Message</label>
-                                    <textarea id="updateMessage" placeholder="Enter update message..." maxlength="500" required></textarea>
-                                </div>
-                                <button class="btn-primary" type="submit"><i class="fas fa-plus"></i> Add Update</button>
-                            </form>
+                        <div id="updatesList" class="updates-list">
+                            <div class="update-item">
+                                <p>System maintenance scheduled for April 1, 2025.</p>
+                                <span>03/30/2025 10:00 AM</span>
+                            </div>
+                            <div class="update-item">
+                                <p>New parking rules effective from March 31, 2025.</p>
+                                <span>03/29/2025 09:00 AM</span>
+                            </div>
                         </div>
                     </div>
                     <div class="nav-grid">
@@ -352,8 +353,8 @@
         let permits = [];
         let issues = [];
         let updates = [];
-        let isAdmin = false;
-        const ADMIN_PASSWORD = "3343";
+        let isAdmin = localStorage.getItem('isAdmin') === 'true';
+        const ADMIN_PASSWORD = "3343"; // TODO: Replace with secure storage in production
         const ITEMS_PER_PAGE = 5;
         let currentPage = 1;
         let filteredPermits = [];
@@ -383,17 +384,47 @@
             loadPermitsFromDB();
             loadIssuesFromDB();
             loadUpdatesFromDB();
+            filteredPermits = permits.slice().sort((a, b) => b.id - a.id);
         };
 
         request.onerror = function(event) {
             console.error('IndexedDB error:', event.target.errorCode);
-            showToast('Database error. Please try again later.', 'error');
+            showToast(`Database error: ${event.target.errorCode}. Retrying in 5 seconds...`, 'error');
+            setTimeout(() => location.reload(), 5000);
         };
 
-        // Auto-reload every 1 minute (60 seconds)
-        setInterval(() => {
-            location.reload();
-        }, 60000);
+        // Removed auto-reload to prevent interruptions
+        // Added manual sync option in the dashboard if needed
+
+        // Format date for storage (YYYY-MM-DD)
+        function formatDate(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        // Parse date string (YYYY-MM-DD) to Date object in local time
+        function parseDate(dateStr) {
+            const [year, month, day] = dateStr.split('-').map(Number);
+            return new Date(year, month - 1, day);
+        }
+
+        // Get end of day for a date (23:59:59)
+        function getEndOfDay(date) {
+            const endOfDay = new Date(date);
+            endOfDay.setHours(23, 59, 59, 999);
+            return endOfDay;
+        }
+
+        // Format date for display (MM/DD/YYYY)
+        function displayDate(dateStr) {
+            const date = parseDate(dateStr);
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const year = date.getFullYear();
+            return `${month}/${day}/${year}`;
+        }
 
         function showLoadingSpinner() {
             document.getElementById('loadingSpinner').classList.remove('hidden');
@@ -405,13 +436,45 @@
 
         function loadPermitsFromDB() {
             showLoadingSpinner();
-            const transaction = db.transaction(['permits'], 'readonly');
-            const store = transaction.objectStore('permits');
-            const request = store.getAll();
+            try {
+                const transaction = db.transaction(['permits'], 'readonly');
+                const store = transaction.objectStore('permits');
+                const request = store.getAll();
 
-            request.onsuccess = function() {
-                const now = new Date();
-                permits = request.result.length ? request.result.sort((a, b) => b.id - a.id) : [
+                request.onsuccess = function() {
+                    permits = request.result.length ? request.result.sort((a, b) => b.id - a.id) : [];
+                    // Only add sample data if the database is empty
+                    if (!permits.length) {
+                        const now = new Date();
+                        const samplePermit = { 
+                            id: 1, 
+                            permitNo: "P001", 
+                            unitNo: "1234/A", 
+                            visitorName: "John Doe", 
+                            licensePlate: "ABC123", 
+                            vehicleMake: "Toyota", 
+                            vehicleColor: "Blue", 
+                            issueDate: "2025-03-01", // Hardcode to prevent date shifts
+                            expireDate: "2025-03-31", // Hardcode to prevent date shifts
+                            issueOfficer: "Jagroop", 
+                            issueMonth: "2025-03" 
+                        };
+                        permits.push(samplePermit);
+                        const writeTransaction = db.transaction(['permits'], 'readwrite');
+                        const writeStore = writeTransaction.objectStore('permits');
+                        permits.forEach(permit => writeStore.add(permit));
+                    }
+                    updateDashboardMetrics();
+                    hideLoadingSpinner();
+                };
+
+                request.onerror = function() {
+                    throw new Error('Failed to load permits');
+                };
+            } catch (error) {
+                console.error(error);
+                showToast('Error loading permits. Using fallback data.', 'error');
+                permits = [
                     { 
                         id: 1, 
                         permitNo: "P001", 
@@ -420,80 +483,79 @@
                         licensePlate: "ABC123", 
                         vehicleMake: "Toyota", 
                         vehicleColor: "Blue", 
-                        issueDate: now.toISOString().split('T')[0], 
-                        expireDate: new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], 
+                        issueDate: "2025-03-01", 
+                        expireDate: "2025-03-31", 
                         issueOfficer: "Jagroop", 
-                        issueMonth: getCurrentMonth() 
-                    },
-                    { 
-                        id: 2, 
-                        permitNo: "P002", 
-                        unitNo: "5678/B", 
-                        visitorName: "Jane Smith", 
-                        licensePlate: "XYZ789", 
-                        vehicleMake: "Honda", 
-                        vehicleColor: "Red", 
-                        issueDate: now.toISOString().split('T')[0], 
-                        expireDate: new Date(now.getTime() + 15 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], 
-                        issueOfficer: "Melbin", 
-                        issueMonth: getCurrentMonth() 
+                        issueMonth: "2025-03" 
                     }
-                ].sort((a, b) => b.id - a.id);
-                if (!request.result.length) {
-                    const writeTransaction = db.transaction(['permits'], 'readwrite');
-                    const writeStore = writeTransaction.objectStore('permits');
-                    permits.forEach(permit => writeStore.add(permit));
-                }
+                ];
                 updateDashboardMetrics();
                 hideLoadingSpinner();
-            };
-
-            request.onerror = function() {
-                showToast('Error loading permits.', 'error');
-                hideLoadingSpinner();
-            };
+            }
         }
 
         function loadIssuesFromDB() {
             showLoadingSpinner();
-            const transaction = db.transaction(['issues'], 'readonly');
-            const store = transaction.objectStore('issues');
-            const request = store.getAll();
+            try {
+                const transaction = db.transaction(['issues'], 'readonly');
+                const store = transaction.objectStore('issues');
+                const request = store.getAll();
 
-            request.onsuccess = function() {
-                issues = request.result;
-                updateDashboardMetrics();
-                if (isAdmin) loadIssuesTable();
-                hideLoadingSpinner();
-            };
+                request.onsuccess = function() {
+                    issues = request.result;
+                    updateDashboardMetrics();
+                    if (isAdmin) loadIssuesTable();
+                    hideLoadingSpinner();
+                };
 
-            request.onerror = function() {
+                request.onerror = function() {
+                    throw new Error('Failed to load issues');
+                };
+            } catch (error) {
+                console.error(error);
                 showToast('Error loading issues.', 'error');
                 hideLoadingSpinner();
-            };
+            }
         }
 
         function loadUpdatesFromDB() {
             showLoadingSpinner();
-            const transaction = db.transaction(['updates'], 'readonly');
-            const store = transaction.objectStore('updates');
-            const request = store.getAll();
+            try {
+                const transaction = db.transaction(['updates'], 'readonly');
+                const store = transaction.objectStore('updates');
+                const request = store.getAll();
 
-            request.onsuccess = function() {
-                updates = request.result;
-                displayUpdates();
-                hideLoadingSpinner();
-            };
+                request.onsuccess = function() {
+                    updates = request.result;
+                    if (!updates.length) {
+                        const updatesList = document.getElementById('updatesList');
+                        const updateItems = updatesList.getElementsByClassName('update-item');
+                        updates = Array.from(updateItems).map((item, index) => ({
+                            id: index + 1,
+                            message: item.querySelector('p').textContent,
+                            createdAt: item.querySelector('span').textContent
+                        }));
+                        const writeTransaction = db.transaction(['updates'], 'readwrite');
+                        const writeStore = writeTransaction.objectStore('updates');
+                        updates.forEach(update => writeStore.add(update));
+                    }
+                    displayUpdates();
+                    hideLoadingSpinner();
+                };
 
-            request.onerror = function() {
+                request.onerror = function() {
+                    throw new Error('Failed to load updates');
+                };
+            } catch (error) {
+                console.error(error);
                 showToast('Error loading updates.', 'error');
                 hideLoadingSpinner();
-            };
+            }
         }
 
         function updateDashboardMetrics() {
             const now = new Date();
-            const todayStr = now.toISOString().split('T')[0];
+            const todayStr = formatDate(now);
             const totalPermits = permits.length;
             const todayPermits = permits.filter(p => p.issueDate === todayStr).length;
             const openIssues = issues.filter(i => i.status !== 'solved').length;
@@ -501,18 +563,16 @@
             animateCount('totalPermits', totalPermits);
             animateCount('todayPermits', todayPermits);
             animateCount('openIssues', openIssues);
-
-            document.getElementById('addUpdateForm').classList.toggle('hidden', !isAdmin);
         }
 
         function animateCount(elementId, target) {
             const element = document.getElementById(elementId);
-            let start = 0;
+            let start = parseInt(element.textContent) || 0;
             const duration = 1000;
-            const increment = target / (duration / 60);
+            const increment = (target - start) / (duration / 60);
             const interval = setInterval(() => {
                 start += increment;
-                if (start >= target) {
+                if (increment > 0 ? start >= target : start <= target) {
                     start = target;
                     clearInterval(interval);
                 }
@@ -531,10 +591,8 @@
             const permitNo = `P${getNextPermitNo()}`;
             document.getElementById('permitNo').value = permitNo;
             const now = new Date();
-            const todayStr = now.toISOString().split('T')[0];
-            const expireDate = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
-            document.getElementById('issueDate').value = todayStr;
-            document.getElementById('expireDate').value = expireDate.toISOString().split('T')[0];
+            document.getElementById('issueDate').value = formatDate(now);
+            document.getElementById('expireDate').value = formatDate(new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000));
         }
 
         function showSection(sectionId) {
@@ -558,59 +616,69 @@
 
         function getNextPermitNo() {
             if (!permits.length) return "001";
-            const lastPermit = permits[0].permitNo;
-            const num = parseInt(lastPermit.slice(1)) + 1;
-            return String(num).padStart(3, '0');
+            const maxPermitNo = Math.max(...permits.map(p => parseInt(p.permitNo.slice(1)) || 0));
+            return String(maxPermitNo + 1).padStart(3, '0');
         }
 
         function searchPermits() {
-            const query = document.getElementById('searchPermits').value.toLowerCase();
-            filteredPermits = permits.filter(p => 
-                p.permitNo.toLowerCase().includes(query) ||
-                p.unitNo.toLowerCase().includes(query) ||
-                p.visitorName.toLowerCase().includes(query) ||
-                p.licensePlate.toLowerCase().includes(query) ||
-                p.vehicleMake.toLowerCase().includes(query) ||
-                p.vehicleColor.toLowerCase().includes(query) ||
-                p.issueOfficer.toLowerCase().includes(query)
-            ).sort((a, b) => b.id - a.id);
-            currentPage = 1;
-            loadSearchResults();
+            try {
+                const query = document.getElementById('searchPermits').value.toLowerCase().trim();
+                filteredPermits = permits.filter(p => 
+                    (p.permitNo || '').toLowerCase().includes(query) ||
+                    (p.unitNo || '').toLowerCase().includes(query) ||
+                    (p.visitorName || '').toLowerCase().includes(query) ||
+                    (p.licensePlate || '').toLowerCase().includes(query) ||
+                    (p.vehicleMake || '').toLowerCase().includes(query) ||
+                    (p.vehicleColor || '').toLowerCase().includes(query) ||
+                    (p.issueOfficer || '').toLowerCase().includes(query)
+                ).sort((a, b) => b.id - a.id);
+                currentPage = 1;
+                loadSearchResults();
+            } catch (error) {
+                console.error(error);
+                showToast('Error searching permits.', 'error');
+            }
         }
 
         function loadSearchResults() {
-            const now = new Date();
-            const start = (currentPage - 1) * ITEMS_PER_PAGE;
-            const end = start + ITEMS_PER_PAGE;
-            const paginatedPermits = filteredPermits.slice(start, end);
+            try {
+                const now = new Date();
+                const start = (currentPage - 1) * ITEMS_PER_PAGE;
+                const end = start + ITEMS_PER_PAGE;
+                const paginatedPermits = filteredPermits.slice(start, end);
 
-            const tableBody = document.getElementById('permitsTableBody');
-            tableBody.innerHTML = paginatedPermits.map(p => {
-                const issueDate = new Date(p.issueDate);
-                const expireDate = new Date(p.expireDate);
-                return `
-                    <tr>
-                        <td>${highlightText(p.permitNo, document.getElementById('searchPermits').value)}<br><span>${highlightText(p.visitorName, document.getElementById('searchPermits').value)} (${highlightText(p.unitNo, document.getElementById('searchPermits').value)})</span></td>
-                        <td>${highlightText(p.licensePlate, document.getElementById('searchPermits').value)}<br><span>${highlightText(p.vehicleMake, document.getElementById('searchPermits').value)} - ${highlightText(p.vehicleColor, document.getElementById('searchPermits').value)}</span></td>
-                        <td><i class="fas fa-calendar"></i> ${issueDate.toLocaleDateString()} - ${expireDate.toLocaleDateString()}</td>
-                        <td>${highlightText(p.issueOfficer, document.getElementById('searchPermits').value)}</td>
-                        <td><span class="status ${expireDate > now ? 'active' : 'expired'}">${expireDate > now ? 'Active' : 'Expired'}</span></td>
-                        <td><button class="btn-primary" onclick="editPermit(${p.id})"><i class="fas fa-edit"></i> Edit</button></td>
-                    </tr>
-                `;
-            }).join('');
+                const tableBody = document.getElementById('permitsTableBody');
+                tableBody.innerHTML = paginatedPermits.map(p => {
+                    const issueDate = parseDate(p.issueDate);
+                    const expireDate = parseDate(p.expireDate);
+                    const expireDateEndOfDay = getEndOfDay(expireDate); // Fix: Consider end of day for expiration
+                    return `
+                        <tr>
+                            <td>${highlightText(p.permitNo, document.getElementById('searchPermits').value)}<br><span>${highlightText(p.visitorName, document.getElementById('searchPermits').value)} (${highlightText(p.unitNo, document.getElementById('searchPermits').value)})</span></td>
+                            <td>${highlightText(p.licensePlate, document.getElementById('searchPermits').value)}<br><span>${highlightText(p.vehicleMake, document.getElementById('searchPermits').value)} - ${highlightText(p.vehicleColor, document.getElementById('searchPermits').value)}</span></td>
+                            <td><i class="fas fa-calendar"></i> ${displayDate(p.issueDate)} - ${displayDate(p.expireDate)}</td>
+                            <td>${highlightText(p.issueOfficer, document.getElementById('searchPermits').value)}</td>
+                            <td><span class="status ${expireDateEndOfDay > now ? 'active' : 'expired'}">${expireDateEndOfDay > now ? 'Active' : 'Expired'}</span></td>
+                            <td><button class="btn-primary" onclick="editPermit(${p.id})"><i class="fas fa-edit"></i> Edit</button></td>
+                        </tr>
+                    `;
+                }).join('');
 
-            const tableContainer = document.getElementById('searchResults');
-            tableContainer.classList.toggle('hidden', !filteredPermits.length);
+                const tableContainer = document.getElementById('searchResults');
+                tableContainer.classList.toggle('hidden', !paginatedPermits.length);
 
-            const totalPages = Math.ceil(filteredPermits.length / ITEMS_PER_PAGE);
-            document.getElementById('pageInfo').textContent = `Page ${currentPage} of ${totalPages || 1}`;
-            document.getElementById('prevPageBtn').disabled = currentPage === 1;
-            document.getElementById('nextPageBtn').disabled = currentPage === totalPages || totalPages === 0;
+                const totalPages = Math.ceil(filteredPermits.length / ITEMS_PER_PAGE);
+                document.getElementById('pageInfo').textContent = `Page ${currentPage} of ${totalPages || 1}`;
+                document.getElementById('prevPageBtn').disabled = currentPage === 1;
+                document.getElementById('nextPageBtn').disabled = currentPage === totalPages || totalPages === 0;
+            } catch (error) {
+                console.error(error);
+                showToast('Error loading search results.', 'error');
+            }
         }
 
         function highlightText(text, query) {
-            if (!query) return text;
+            if (!query || !text) return text || '';
             const regex = new RegExp(`(${query})`, 'gi');
             return text.replace(regex, '<span class="highlight">$1</span>');
         }
@@ -667,7 +735,9 @@
             const errorDiv = document.getElementById('formError');
             const submitBtn = document.getElementById('savePermitBtn');
             const unitInput = document.getElementById('unitNo');
-            const currentMonth = getCurrentMonth();
+            const issueDateStr = document.getElementById('issueDate').value;
+            const issueDate = parseDate(issueDateStr);
+            const currentMonth = `${issueDate.getFullYear()}-${String(issueDate.getMonth() + 1).padStart(2, '0')}`;
             const editPermitId = document.getElementById('editPermitId').value;
 
             if (regex.test(unitNo)) {
@@ -721,115 +791,133 @@
             document.getElementById('issueDate').value = permit.issueDate;
             document.getElementById('expireDate').value = permit.expireDate;
 
-            checkUnit();
+            checkUnit(); // Ensure validation is triggered after populating the form
             showSection('form');
         }
 
         function submitPermit(event) {
             event.preventDefault();
-            const editPermitId = document.getElementById('editPermitId').value;
-            const unitNo = document.getElementById('unitNo').value.toUpperCase();
-            const licensePlate = document.getElementById('licensePlate').value.toUpperCase();
-            const issueDate = new Date(document.getElementById('issueDate').value);
-            const expireDate = new Date(document.getElementById('expireDate').value);
-            const currentMonth = getCurrentMonth();
+            try {
+                const editPermitId = document.getElementById('editPermitId').value;
+                const unitNo = document.getElementById('unitNo').value.toUpperCase();
+                const licensePlate = document.getElementById('licensePlate').value.toUpperCase();
+                const issueDateStr = document.getElementById('issueDate').value;
+                const expireDateStr = document.getElementById('expireDate').value;
+                const vehicleMake = document.getElementById('vehicleMake').value;
+                const vehicleColor = document.getElementById('vehicleColor').value;
+                const issueOfficer = document.getElementById('issueOfficer').value;
+                const issueDate = parseDate(issueDateStr);
+                const currentMonth = `${issueDate.getFullYear()}-${String(issueDate.getMonth() + 1).padStart(2, '0')}`;
 
-            const form = document.getElementById('permitForm');
-            let isValid = true;
-            form.querySelectorAll('input[required], select[required]').forEach(input => {
-                if (!input.value.trim()) {
-                    input.classList.add('invalid');
-                    isValid = false;
-                } else {
-                    input.classList.remove('invalid');
-                }
-            });
+                const form = document.getElementById('permitForm');
+                let isValid = true;
+                form.querySelectorAll('input[required], select[required]').forEach(input => {
+                    if (!input.value.trim() || (input.tagName === 'SELECT' && input.value === '')) {
+                        input.classList.add('invalid');
+                        isValid = false;
+                    } else {
+                        input.classList.remove('invalid');
+                    }
+                });
 
-            if (!isValid) {
-                showToast('Please fill in all required fields.', 'error');
-                return;
-            }
-
-            if (!/^\d{4}\/[A-Z]$/.test(unitNo)) {
-                showToast('Invalid unit number format.', 'error');
-                return;
-            }
-
-            const originalPermit = editPermitId ? permits.find(p => p.id == editPermitId) : null;
-            if (!editPermitId || (editPermitId && originalPermit.unitNo !== unitNo)) {
-                const monthlyPermits = permits.filter(p => p.unitNo.toUpperCase() === unitNo && p.issueMonth === currentMonth && (!editPermitId || p.id != editPermitId));
-                if (monthlyPermits.length >= MAX_PERMITS_PER_UNIT_PER_MONTH) {
-                    showToast(`Permit limit reached for this unit in ${currentMonth}.`, 'error');
+                if (!isValid) {
+                    showToast('All required fields must be filled.', 'error');
                     return;
                 }
-            }
 
-            const existingPermit = permits.find(p => p.licensePlate.toUpperCase() === licensePlate && new Date(p.expireDate) > new Date() && (!editPermitId || p.id != editPermitId));
-            if (existingPermit) {
-                showToast('Active permit exists for this license plate.', 'error');
-                return;
-            }
+                if (!/^\d{4}\/[A-Z]$/.test(unitNo)) {
+                    showToast('Unit number must be in format 1234/A.', 'error');
+                    return;
+                }
 
-            if (issueDate >= expireDate) {
-                showToast('Expire date must be after issue date.', 'error');
-                return;
-            }
+                if (licensePlate.length < 1 || licensePlate.length > 10) {
+                    showToast('License plate must be 1-10 characters.', 'error');
+                    return;
+                }
 
-            if (!confirm(`Are you sure you want to ${editPermitId ? 'update' : 'save'} this permit?`)) return;
+                const expireDate = parseDate(expireDateStr);
+                const expireDateEndOfDay = getEndOfDay(expireDate);
 
-            const permitData = {
-                permitNo: document.getElementById('permitNo').value,
-                unitNo: unitNo,
-                visitorName: document.getElementById('visitorName').value,
-                licensePlate: licensePlate,
-                vehicleMake: document.getElementById('vehicleMake').value,
-                vehicleColor: document.getElementById('vehicleColor').value,
-                issueDate: document.getElementById('issueDate').value,
-                expireDate: document.getElementById('expireDate').value,
-                issueOfficer: document.getElementById('issueOfficer').value,
-                issueMonth: `${issueDate.getFullYear()}-${String(issueDate.getMonth() + 1).padStart(2, '0')}`
-            };
+                const originalPermit = editPermitId ? permits.find(p => p.id == editPermitId) : null;
+                if (!editPermitId || (editPermitId && originalPermit.unitNo !== unitNo)) {
+                    const monthlyPermits = permits.filter(p => p.unitNo === unitNo && p.issueMonth === currentMonth && (!editPermitId || p.id != editPermitId));
+                    if (monthlyPermits.length >= MAX_PERMITS_PER_UNIT_PER_MONTH) {
+                        showToast(`Permit limit reached for ${unitNo} in ${currentMonth}.`, 'error');
+                        return;
+                    }
+                }
 
-            showLoadingSpinner();
-            const transaction = db.transaction(['permits'], 'readwrite');
-            const store = transaction.objectStore('permits');
+                const existingPermit = permits.find(p => p.licensePlate === licensePlate && getEndOfDay(parseDate(p.expireDate)) > new Date() && (!editPermitId || p.id != editPermitId));
+                if (existingPermit) {
+                    showToast(`Active permit already exists for ${licensePlate}.`, 'error');
+                    return;
+                }
 
-            if (editPermitId) {
-                permitData.id = parseInt(editPermitId);
-                const request = store.put(permitData);
+                if (issueDate >= expireDate) {
+                    showToast('Expire date must be after issue date.', 'error');
+                    return;
+                }
 
-                request.onsuccess = function() {
-                    const index = permits.findIndex(p => p.id == editPermitId);
-                    permits[index] = permitData;
-                    permits.sort((a, b) => b.id - a.id);
-                    showSection('unit-search');
-                    updateDashboardMetrics();
-                    showToast('Permit updated successfully!');
-                    resetForm();
-                    hideLoadingSpinner();
+                if (!confirm(`Confirm ${editPermitId ? 'update' : 'save'} permit for ${unitNo}?`)) return;
+
+                const permitData = {
+                    permitNo: document.getElementById('permitNo').value,
+                    unitNo: unitNo,
+                    visitorName: document.getElementById('visitorName').value.trim(),
+                    licensePlate: licensePlate,
+                    vehicleMake: vehicleMake,
+                    vehicleColor: vehicleColor,
+                    issueDate: issueDateStr,
+                    expireDate: expireDateStr,
+                    issueOfficer: issueOfficer,
+                    issueMonth: currentMonth // Ensure issueMonth is updated
                 };
 
-                request.onerror = function() {
-                    showToast('Error updating permit.', 'error');
-                    hideLoadingSpinner();
-                };
-            } else {
-                const request = store.add(permitData);
+                showLoadingSpinner();
+                const transaction = db.transaction(['permits'], 'readwrite');
+                const store = transaction.objectStore('permits');
 
-                request.onsuccess = function() {
-                    permitData.id = request.result;
-                    permits.unshift(permitData);
-                    showSection('permits');
-                    updateDashboardMetrics();
-                    showToast('Permit saved successfully!');
-                    resetForm();
-                    hideLoadingSpinner();
-                };
+                if (editPermitId) {
+                    permitData.id = parseInt(editPermitId);
+                    const request = store.put(permitData);
 
-                request.onerror = function() {
-                    showToast('Error saving permit.', 'error');
-                    hideLoadingSpinner();
-                };
+                    request.onsuccess = function() {
+                        const index = permits.findIndex(p => p.id == editPermitId);
+                        permits[index] = permitData;
+                        permits.sort((a, b) => b.id - a.id);
+                        filteredPermits = permits.slice().sort((a, b) => b.id - a.id);
+                        showSection('unit-search');
+                        updateDashboardMetrics();
+                        showToast('Permit updated successfully!');
+                        resetForm();
+                        hideLoadingSpinner();
+                    };
+
+                    request.onerror = function() {
+                        throw new Error('Failed to update permit');
+                    };
+                } else {
+                    const request = store.add(permitData);
+
+                    request.onsuccess = function() {
+                        permitData.id = request.result;
+                        permits.unshift(permitData);
+                        filteredPermits = permits.slice().sort((a, b) => b.id - a.id);
+                        showSection('permits');
+                        updateDashboardMetrics();
+                        showToast('Permit saved successfully!');
+                        resetForm();
+                        hideLoadingSpinner();
+                    };
+
+                    request.onerror = function() {
+                        throw new Error('Failed to save permit');
+                    };
+                }
+            } catch (error) {
+                console.error(error);
+                showToast('Error processing permit. Please try again.', 'error');
+                hideLoadingSpinner();
             }
         }
 
@@ -854,51 +942,56 @@
 
         function submitIssue(event) {
             event.preventDefault();
-            const username = document.getElementById('reportUsername').value.trim();
-            const description = document.getElementById('issueDescription').value.trim();
+            try {
+                const username = document.getElementById('reportUsername').value.trim();
+                const description = document.getElementById('issueDescription').value.trim();
 
-            if (!username || !description) {
-                showToast('Please provide your name and issue description.', 'error');
-                return;
-            }
+                if (!username || !description) {
+                    showToast('Name and description are required.', 'error');
+                    return;
+                }
 
-            const newIssue = {
-                reportedBy: username,
-                description: description,
-                status: 'open',
-                createdAt: new Date().toISOString()
-            };
+                const newIssue = {
+                    reportedBy: username,
+                    description: description,
+                    status: 'open',
+                    createdAt: formatDate(new Date())
+                };
 
-            showLoadingSpinner();
-            const transaction = db.transaction(['issues'], 'readwrite');
-            const store = transaction.objectStore('issues');
-            const request = store.add(newIssue);
+                showLoadingSpinner();
+                const transaction = db.transaction(['issues'], 'readwrite');
+                const store = transaction.objectStore('issues');
+                const request = store.add(newIssue);
 
-            request.onsuccess = function() {
-                newIssue.id = request.result;
-                issues.push(newIssue);
-                document.getElementById('reportUsername').value = '';
-                document.getElementById('issueDescription').value = '';
-                updateCharCount();
-                updateDashboardMetrics();
-                if (isAdmin) loadIssuesTable();
-                showToast('Issue reported successfully!');
-                hideLoadingSpinner();
-            };
+                request.onsuccess = function() {
+                    newIssue.id = request.result;
+                    issues.push(newIssue);
+                    document.getElementById('reportUsername').value = '';
+                    document.getElementById('issueDescription').value = '';
+                    updateCharCount();
+                    updateDashboardMetrics();
+                    if (isAdmin) loadIssuesTable();
+                    showToast('Issue reported successfully!');
+                    hideLoadingSpinner();
+                };
 
-            request.onerror = function() {
+                request.onerror = function() {
+                    throw new Error('Failed to report issue');
+                };
+            } catch (error) {
+                console.error(error);
                 showToast('Error reporting issue.', 'error');
                 hideLoadingSpinner();
-            };
+            }
         }
 
         function loginAsAdmin() {
             const password = document.getElementById('adminPassword').value;
             if (password === ADMIN_PASSWORD) {
                 isAdmin = true;
+                localStorage.setItem('isAdmin', 'true');
                 document.getElementById('adminAuth').classList.add('hidden');
                 document.getElementById('adminIssues').classList.remove('hidden');
-                document.getElementById('addUpdateForm').classList.remove('hidden');
                 loadIssuesTable();
                 showToast('Admin login successful.');
             } else {
@@ -907,18 +1000,23 @@
         }
 
         function loadIssuesTable() {
-            const tableBody = document.getElementById('issuesTableBody');
-            tableBody.innerHTML = issues.map(i => `
-                <tr>
-                    <td>${i.id}</td>
-                    <td>${i.reportedBy}</td>
-                    <td>${i.description}</td>
-                    <td><span class="status ${i.status === 'solved' ? 'active' : 'expired'}">${i.status === 'solved' ? 'Solved' : 'Open'}</span></td>
-                    <td>
-                        ${i.status !== 'solved' ? `<button class="btn-primary" onclick="markIssueSolved(${i.id})"><i class="fas fa-check"></i> Mark as Solved</button>` : ''}
-                    </td>
-                </tr>
-            `).join('');
+            try {
+                const tableBody = document.getElementById('issuesTableBody');
+                tableBody.innerHTML = issues.map(i => `
+                    <tr>
+                        <td>${i.id}</td>
+                        <td>${i.reportedBy}</td>
+                        <td>${i.description}</td>
+                        <td><span class="status ${i.status === 'solved' ? 'active' : 'expired'}">${i.status === 'solved' ? 'Solved' : 'Open'}</span></td>
+                        <td>
+                            ${i.status !== 'solved' ? `<button class="btn-primary" onclick="markIssueSolved(${i.id})"><i class="fas fa-check"></i> Mark as Solved</button>` : ''}
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                console.error(error);
+                showToast('Error loading issues table.', 'error');
+            }
         }
 
         function markIssueSolved(issueId) {
@@ -927,94 +1025,76 @@
 
             issue.status = 'solved';
             showLoadingSpinner();
-            const transaction = db.transaction(['issues'], 'readwrite');
-            const store = transaction.objectStore('issues');
-            const request = store.put(issue);
+            try {
+                const transaction = db.transaction(['issues'], 'readwrite');
+                const store = transaction.objectStore('issues');
+                const request = store.put(issue);
 
-            request.onsuccess = function() {
-                updateDashboardMetrics();
-                loadIssuesTable();
-                showToast('Issue marked as solved.');
-                hideLoadingSpinner();
-            };
+                request.onsuccess = function() {
+                    updateDashboardMetrics();
+                    loadIssuesTable();
+                    showToast('Issue marked as solved.');
+                    hideLoadingSpinner();
+                };
 
-            request.onerror = function() {
+                request.onerror = function() {
+                    throw new Error('Failed to mark issue as solved');
+                };
+            } catch (error) {
+                console.error(error);
                 showToast('Error marking issue as solved.', 'error');
                 hideLoadingSpinner();
-            };
+            }
         }
 
         function clearSolvedIssues() {
             if (!confirm('Are you sure you want to clear all solved issues?')) return;
 
             showLoadingSpinner();
-            const transaction = db.transaction(['issues'], 'readwrite');
-            const store = transaction.objectStore('issues');
-            const unsolvedIssues = issues.filter(i => i.status !== 'solved');
-            const clearRequest = store.clear();
+            try {
+                const unsolvedIssues = issues.filter(i => i.status !== 'solved');
+                const transaction = db.transaction(['issues'], 'readwrite');
+                const store = transaction.objectStore('issues');
+                const clearRequest = store.clear();
 
-            clearRequest.onsuccess = function() {
-                unsolvedIssues.forEach(issue => store.add(issue));
-                issues = unsolvedIssues;
-                updateDashboardMetrics();
-                loadIssuesTable();
-                showToast('Solved issues cleared successfully.');
-                hideLoadingSpinner();
-            };
+                clearRequest.onsuccess = function() {
+                    const reAddTransaction = db.transaction(['issues'], 'readwrite');
+                    const reAddStore = reAddTransaction.objectStore('issues');
+                    unsolvedIssues.forEach(issue => reAddStore.add(issue));
+                    issues = unsolvedIssues;
+                    updateDashboardMetrics();
+                    loadIssuesTable();
+                    showToast('Solved issues cleared successfully.');
+                    hideLoadingSpinner();
+                };
 
-            clearRequest.onerror = function() {
+                clearRequest.onerror = function() {
+                    throw new Error('Failed to clear solved issues');
+                };
+            } catch (error) {
+                console.error(error);
                 showToast('Error clearing solved issues.', 'error');
                 hideLoadingSpinner();
-            };
-        }
-
-        function addUpdate(event) {
-            event.preventDefault();
-            if (!isAdmin) {
-                showToast('Admin access required.', 'error');
-                return;
             }
-
-            const message = document.getElementById('updateMessage').value.trim();
-            if (!message) {
-                showToast('Please enter an update message.', 'error');
-                return;
-            }
-
-            const newUpdate = {
-                message: message,
-                createdAt: new Date().toISOString()
-            };
-
-            showLoadingSpinner();
-            const transaction = db.transaction(['updates'], 'readwrite');
-            const store = transaction.objectStore('updates');
-            const request = store.add(newUpdate);
-
-            request.onsuccess = function() {
-                newUpdate.id = request.result;
-                updates.push(newUpdate);
-                document.getElementById('updateMessage').value = '';
-                displayUpdates();
-                showToast('Update added successfully!');
-                hideLoadingSpinner();
-            };
-
-            request.onerror = function() {
-                showToast('Error adding update.', 'error');
-                hideLoadingSpinner();
-            };
         }
 
         function displayUpdates() {
-            const updatesList = document.getElementById('updatesList');
-            updates.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-            updatesList.innerHTML = updates.length ? updates.map(u => `
-                <div class="update-item">
-                    <p>${u.message}</p>
-                    <span>${new Date(u.createdAt).toLocaleString()}</span>
-                </div>
-            `).join('') : '<p>No updates available.</p>';
+            try {
+                const updatesList = document.getElementById('updatesList');
+                if (updates.length) {
+                    updatesList.innerHTML = updates.map(u => `
+                        <div class="update-item">
+                            <p>${u.message}</p>
+                            <span>${u.createdAt}</span>
+                        </div>
+                    `).join('');
+                } else {
+                    updatesList.innerHTML = '<p>No updates available.</p>';
+                }
+            } catch (error) {
+                console.error(error);
+                showToast('Error displaying updates.', 'error');
+            }
         }
 
         function showToast(message, type = 'success') {
