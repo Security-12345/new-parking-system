@@ -200,6 +200,32 @@ h3 {
   outline-offset: 2px;
 }
 
+/* Add-ons for Export and Import Buttons */
+#exportDataBtn,
+#importDataBtn {
+  margin-top: var(--space-sm);
+  background: rgba(0, 0, 0, 0.06);
+  color: var(--text-primary);
+  transition: background var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+#exportDataBtn:hover,
+#importDataBtn:hover {
+  background: rgba(0, 113, 227, 0.18);
+  transform: translateX(4px);
+  box-shadow: var(--shadow-hover);
+}
+
+#exportDataBtn i,
+#importDataBtn i {
+  color: var(--accent-color);
+}
+
+#exportDataBtn:hover i,
+#importDataBtn:hover i {
+  color: var(--primary-color);
+}
+
 .copyright {
   font-size: 0.75rem;
   color: var(--text-secondary);
@@ -357,6 +383,10 @@ h3 {
   }
 }
 
+.search-group {
+  position: relative;
+}
+
 .search-group label {
   font-size: 0.95rem;
   font-weight: 500;
@@ -373,6 +403,9 @@ h3 {
 
 .search-bar {
   position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
 }
 
 .search-bar input {
@@ -399,6 +432,33 @@ h3 {
   transform: translateY(-50%);
   font-size: 1.1rem;
   color: var(--text-secondary);
+}
+
+/* Add-on for Search Filter Dropdown */
+#searchFilter {
+  padding: var(--space-sm);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  font-size: 0.9rem;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+#searchFilter:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.2);
+  outline: none;
+}
+
+#searchFilter:hover {
+  background: rgba(0, 113, 227, 0.06);
+}
+
+#searchFilter option {
+  background: var(--bg-primary);
+  color: var(--text-primary);
 }
 
 /* Buttons */
@@ -1005,6 +1065,16 @@ tr:hover {
   .grid,
   .form-grid {
     grid-template-columns: 1fr;
+  }
+
+  .search-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  #searchFilter {
+    width: 100%;
+    margin-top: var(--space-sm);
   }
 
   .form-actions {
