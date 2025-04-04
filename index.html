@@ -8,40 +8,47 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
+    <!-- Loading Spinner -->
     <div id="loadingSpinner" class="spinner hidden">
         <i class="fas fa-spinner fa-spin"></i>
     </div>
 
+    <!-- Header -->
     <header class="header">
         <div class="header-content">
             <div class="logo">
                 <h1><i class="fas fa-parking"></i> Rainbow Village Parking</h1>
             </div>
-            <div class="system-label">Security Management System</div>
+            <div class="system-label">Security Management System v2.0</div>
         </div>
     </header>
 
+    <!-- Main Layout -->
     <div class="layout">
+        <!-- Sidebar Navigation -->
         <aside class="sidebar">
-    <nav class="sidebar-menu">
-        <button class="active" onclick="showSection('dashboard')"><i class="fas fa-tachometer-alt"></i> Dashboard</button>
-        <button onclick="showSection('permits')"><i class="fas fa-ticket-alt"></i> Add Permit</button>
-        <button onclick="showSection('unit-search')"><i class="fas fa-search"></i> Permit Record</button>
-        <button onclick="showSection('report')"><i class="fas fa-exclamation-circle"></i> Report Issue</button>
-        <button onclick="showSection('about')"><i class="fas fa-info-circle"></i> About</button>
-        <button onclick="window.location.href='index2.html'"><i class="fas fa-book"></i> Site Rules</button>
-        <!-- New Generate Report Button -->
-        <button onclick="window.location.href='report-generator.html'"><i class="fas fa-file-pdf"></i> Generate Report</button>
-    </nav>
-    <div class="copyright">© 2025 Jagroop Singh<br>All rights reserved</div>
-</aside>
+            <nav class="sidebar-menu">
+                <button class="active" data-section="dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</button>
+                <button data-section="permits"><i class="fas fa-ticket-alt"></i> Add Permit</button>
+                <button data-section="unit-search"><i class="fas fa-search"></i> Permit Record</button>
+                <button data-section="report"><i class="fas fa-exclamation-circle"></i> Report Issue</button>
+                <button data-section="about"><i class="fas fa-info-circle"></i> About</button>
+                <button onclick="window.location.href='index2.html'"><i class="fas fa-book"></i> Site Rules</button>
+                <button onclick="window.location.href='report-generator.html'"><i class="fas fa-file-pdf"></i> Generate Report</button>
+                <button id="exportDataBtn"><i class="fas fa-download"></i> Export Data</button>
+                <button id="importDataBtn"><i class="fas fa-upload"></i> Import Data</button>
+            </nav>
+            <div class="copyright">© 2025 Jagroop Singh<br>All rights reserved</div>
+        </aside>
 
+        <!-- Main Content -->
         <main class="main-content">
+            <!-- Dashboard Section -->
             <section id="dashboard" class="section active">
                 <div class="container">
                     <div class="section-header">
                         <h2>Dashboard</h2>
-                        <button class="btn-secondary" onclick="refreshMetrics()"><i class="fas fa-sync-alt"></i> Refresh</button>
+                        <button class="btn-secondary" id="refreshMetricsBtn"><i class="fas fa-sync-alt"></i> Refresh</button>
                     </div>
                     <div class="metrics-grid">
                         <div class="metric-card" title="Total number of permits issued">
@@ -59,61 +66,68 @@
                             <h3>Open Issues</h3>
                             <p id="openIssues" class="count-up">0</p>
                         </div>
+                        <div class="metric-card" title="Permits expiring within the next 7 days">
+                            <i class="fas fa-clock"></i>
+                            <h3>Expiring Soon</h3>
+                            <p id="expiringSoon" class="count-up">0</p>
+                        </div>
                     </div>
                     <div class="updates-section">
                         <h3>Latest Updates</h3>
                         <div id="updatesList" class="updates-list">
-                            <div class="update-item" style="font-weight: bold; color: #333;">
-    <p>The admin is working on all reported issues and most probably will fix them by tomorrow. Thanks, by Jagroop.</p>
-    <span>04/01/2025 - Admin</span>
-</div>
+                            <div class="update-item">
+                                <p>Welcome to the upgraded Rainbow Parking System v2.0!</p>
+                                <span>04/04/2025 - Admin</span>
+                            </div>
                         </div>
                     </div>
                     <div class="nav-grid">
-                        <div class="nav-card" onclick="showSection('permits')">
+                        <div class="nav-card" data-section="permits">
                             <i class="fas fa-ticket-alt"></i>
                             <h3>Permit Management</h3>
                             <p>Add new visitor parking permits</p>
                         </div>
-                        <div class="nav-card" onclick="showSection('unit-search')">
+                        <div class="nav-card" data-section="unit-search">
                             <i class="fas fa-search"></i>
                             <h3>Unit Search</h3>
-                            <p>Search permits and check remaining permits</p>
+                            <p>Search permits and check allocations</p>
                         </div>
-                        <div class="nav-card" onclick="showSection('report')">
+                        <div class="nav-card" data-section="report">
                             <i class="fas fa-exclamation-circle"></i>
                             <h3>Report Issue</h3>
-                            <p>Report problems with the parking system</p>
+                            <p>Submit parking-related concerns</p>
                         </div>
-                        <div class="nav-card" onclick="showSection('about')">
+                        <div class="nav-card" data-section="about">
                             <i class="fas fa-info-circle"></i>
                             <h3>About</h3>
-                            <p>Information about the parking management system</p>
+                            <p>Learn about the system</p>
                         </div>
                     </div>
                 </div>
             </section>
 
+            <!-- Permits Section -->
             <section id="permits" class="section hidden">
                 <div class="container">
                     <h2>Permit Management</h2>
-                    <p>Add new visitor parking permits with ease</p>
+                    <p>Create and manage visitor parking permits efficiently</p>
                     <div class="permit-actions">
-                        <button class="btn-primary" onclick="showSection('form')"><i class="fas fa-plus"></i> Add New Permit</button>
+                        <button class="btn-primary" data-section="form"><i class="fas fa-plus"></i> Add New Permit</button>
                     </div>
                 </div>
             </section>
 
+            <!-- Permit Form Section -->
             <section id="form" class="section hidden">
                 <div class="container">
                     <div class="form-container">
                         <div class="form-header">
                             <h3 id="formTitle">Add New Parking Permit</h3>
-                            <button onclick="showSection('permits')"><i class="fas fa-times"></i></button>
+                            <button data-section="permits"><i class="fas fa-times"></i></button>
                         </div>
                         <div id="formError" class="error hidden"></div>
                         <div id="formRemaining" class="info hidden"></div>
-                        <form id="permitForm" onsubmit="submitPermit(event)">
+                        <form id="permitForm">
                             <input type="hidden" id="editPermitId">
                             <div class="grid form-grid">
                                 <div>
@@ -122,7 +136,7 @@
                                 </div>
                                 <div>
                                     <label>Unit No.</label>
-                                    <input type="text" id="unitNo" placeholder="1234/A" pattern="^\d{4}/[A-Z]$" required oninput="checkUnit()">
+                                    <input type="text" id="unitNo" placeholder="1234/A" pattern="^\d{4}/[A-Z]$" required>
                                 </div>
                                 <div>
                                     <label>Visitor Name</label>
@@ -213,8 +227,8 @@
                                 </div>
                             </div>
                             <div class="form-actions">
-                                <button type="button" onclick="resetForm()">Reset</button>
-                                <button type="button" onclick="showSection('permits')">Cancel</button>
+                                <button type="button" id="resetFormBtn">Reset</button>
+                                <button type="button" data-section="permits">Cancel</button>
                                 <button type="submit" id="savePermitBtn">Save Permit</button>
                             </div>
                         </form>
@@ -222,29 +236,37 @@
                 </div>
             </section>
 
+            <!-- Unit Search Section -->
             <section id="unit-search" class="section hidden">
                 <div class="container">
-                    <h2>Unit Search</h2>
-                    <p>Search for permits or check remaining permits for specific units</p>
+                    <h2>Permit Record</h2>
+                    <p>Search permits or check remaining allocations</p>
                     <div class="grid">
                         <div class="search-group">
                             <label>Search Permits</label>
                             <div class="search-bar">
                                 <i class="fas fa-search"></i>
-                                <input type="text" id="searchPermits" placeholder="Search by any field..." oninput="searchPermits()">
+                                <input type="text" id="searchPermits" placeholder="Search by any field...">
                             </div>
+                            <select id="searchFilter" title="Filter search results">
+                                <option value="all">All Fields</option>
+                                <option value="permitNo">Permit No.</option>
+                                <option value="unitNo">Unit No.</option>
+                                <option value="licensePlate">License Plate</option>
+                                <option value="visitorName">Visitor Name</option>
+                            </select>
                         </div>
                         <div class="search-group">
                             <label>Check Remaining Permits</label>
                             <div class="search-bar">
                                 <i class="fas fa-search"></i>
-                                <input type="text" id="unitSearchInput" placeholder="Unit No. (e.g., 1234/A)" oninput="checkRemainingPermits()">
+                                <input type="text" id="unitSearchInput" placeholder="Unit No. (e.g., 1234/A)">
                             </div>
                             <div id="unitSearchResult" class="info hidden"></div>
                         </div>
                     </div>
                     <div class="search-actions">
-                        <button class="btn-secondary" onclick="clearSearch()"><i class="fas fa-times"></i> Clear Search</button>
+                        <button class="btn-secondary" id="clearSearchBtn"><i class="fas fa-times"></i> Clear Search</button>
                     </div>
                     <div id="searchResults" class="table-container hidden">
                         <table id="permitsTable">
@@ -261,43 +283,44 @@
                             <tbody id="permitsTableBody"></tbody>
                         </table>
                         <div class="pagination">
-                            <button onclick="prevPage()" id="prevPageBtn" disabled><i class="fas fa-chevron-left"></i> Previous</button>
+                            <button id="prevPageBtn" disabled><i class="fas fa-chevron-left"></i> Previous</button>
                             <span id="pageInfo">Page 1</span>
-                            <button onclick="nextPage()" id="nextPageBtn">Next <i class="fas fa-chevron-right"></i></button>
+                            <button id="nextPageBtn">Next <i class="fas fa-chevron-right"></i></button>
                         </div>
                     </div>
                 </div>
             </section>
 
+            <!-- Report Issue Section -->
             <section id="report" class="section hidden">
                 <div class="container">
                     <h2>Report an Issue</h2>
                     <div id="reportForm">
-                        <p>Encountered a problem? Submit your issue below:</p>
-                        <form id="issueForm" onsubmit="submitIssue(event)">
+                        <p>Encountered a problem? Let us know:</p>
+                        <form id="issueForm">
                             <div class="search-group">
                                 <label>Your Name</label>
                                 <input type="text" id="reportUsername" placeholder="Enter your name" required>
                             </div>
                             <div class="search-group">
                                 <label>Issue Description <span id="charCount">0/500</span></label>
-                                <textarea id="issueDescription" placeholder="Describe the issue..." maxlength="500" required oninput="updateCharCount()"></textarea>
+                                <textarea id="issueDescription" placeholder="Describe the issue..." maxlength="500" required></textarea>
                             </div>
                             <button class="btn-primary" type="submit"><i class="fas fa-paper-plane"></i> Submit Issue</button>
                         </form>
                     </div>
                     <div id="adminAuth" class="hidden">
-                        <p>Enter admin password to view and manage issues:</p>
+                        <p>Admin access required to manage issues:</p>
                         <div class="search-group">
                             <label>Admin Password</label>
                             <input type="password" id="adminPassword" placeholder="Enter admin password">
                         </div>
-                        <button class="btn-primary" onclick="loginAsAdmin()"><i class="fas fa-lock"></i> Login as Admin</button>
+                        <button class="btn-primary" id="adminLoginBtn"><i class="fas fa-lock"></i> Login as Admin</button>
                     </div>
                     <div id="adminIssues" class="table-container hidden">
                         <div class="section-header">
                             <h3>Reported Issues (Admin View)</h3>
-                            <button class="btn-secondary" onclick="clearSolvedIssues()"><i class="fas fa-trash"></i> Clear Solved Issues</button>
+                            <button class="btn-secondary" id="clearSolvedBtn"><i class="fas fa-trash"></i> Clear Solved Issues</button>
                         </div>
                         <table id="issuesTable">
                             <thead>
@@ -315,290 +338,254 @@
                 </div>
             </section>
 
+            <!-- About Section -->
             <section id="about" class="section hidden">
                 <div class="container">
-                    <h2>About Rainbow Parking System</h2>
-                    <p>Welcome to the <strong>Rainbow Parking System</strong>, an innovative and user-friendly platform crafted to revolutionize visitor parking management at Rainbow Village. Developed with precision and care, this system empowers the community’s security team to issue permits, track usage, and resolve issues seamlessly, ensuring a smooth parking experience for all residents and visitors alike.</p>
-                    <h3>What We Offer</h3>
-                    <p>The Rainbow Parking System is more than just a tool—it’s a complete solution designed to bring order and efficiency to community parking. Here’s a glimpse of what makes this platform stand out:</p>
+                    <h2>About Rainbow Parking System v2.0</h2>
+                    <p>Welcome to the <strong>Rainbow Parking System v2.0</strong>, an advanced platform designed to streamline visitor parking management at Rainbow Village. Built with cutting-edge technology, this system empowers security teams with efficient permit issuance, real-time tracking, and robust issue resolution tools.</p>
+                    <h3>Key Features</h3>
                     <ul class="feature-list">
-                        <li><strong>Automated Permit Issuance</strong>: Quickly generate visitor parking permits with unique permit numbers.</li>
-                        <li><strong>Unit-Based Tracking</strong>: Monitor permit allocations per unit, with a cap of 7 permits per month for fairness.</li>
-                        <li><strong>Search & Insights</strong>: Easily search permits by any detail and check remaining permits per unit in real-time.</li>
-                        <li><strong>Issue Reporting</strong>: A dedicated system for residents and security to report and resolve parking-related concerns.</li>
-                        <li><strong>Admin Control</strong>: Secure admin features for managing updates and issues, accessible only to authorized personnel.</li>
-                        <li><strong>Persistent Data</strong>: Powered by IndexedDB, ensuring all data is safely stored and accessible across sessions.</li>
+                        <li><strong>Smart Permit Issuance</strong>: Auto-generated permit numbers with current-month expiry by default.</li>
+                        <li><strong>Enhanced Search</strong>: Filter permits by specific fields for precise results.</li>
+                        <li><strong>Data Management</strong>: Export and import data for backups or migrations.</li>
+                        <li><strong>Unit Tracking</strong>: Enforce a 7-permit monthly limit per unit.</li>
+                        <li><strong>Issue Reporting</strong>: Improved reporting with admin oversight.</li>
+                        <li><strong>Persistent Storage</strong>: IndexedDB ensures data reliability across sessions.</li>
                     </ul>
                     <div class="fancy-note">
-                        <p>© All rights reserved by Jagroop Singh. Crafted and donated as a voluntary initiative for the Rainbow Village community.</p>
-                        <p>For inquiries, feedback, or issues, please connect with Jagroop Singh directly during his visits to the village.</p>
-                        <p>A proud creation of Punjab Production</p>
+                        <p>© All rights reserved by Jagroop Singh. A voluntary contribution to Rainbow Village.</p>
+                        <p>Contact Jagroop Singh during village visits for support or feedback.</p>
+                        <p>Powered by Punjab Production</p>
                     </div>
                 </div>
             </section>
         </main>
     </div>
 
+    <!-- Toast Notification -->
     <div id="toast" class="toast hidden">
         <i id="toastIcon" class="fas"></i>
         <span id="toastMessage"></span>
     </div>
 
+    <!-- Hidden File Input for Import -->
+    <input type="file" id="importFileInput" accept=".json" style="display: none;">
+
+    <!-- JavaScript -->
     <script>
+        /** @type {IDBDatabase} */
         let db;
+        /** @type {Array<Object>} */
         let permits = [];
+        /** @type {Array<Object>} */
         let issues = [];
+        /** @type {Array<Object>} */
         let updates = [];
-        let isAdmin = localStorage.getItem('isAdmin') === 'true';
-        const ADMIN_PASSWORD = "3343"; // TODO: Replace with secure storage in production
+        const isAdmin = () => localStorage.getItem('isAdmin') === 'true';
+        const ADMIN_PASSWORD = "3343"; // TODO: Secure in production
         const ITEMS_PER_PAGE = 5;
         let currentPage = 1;
+        /** @type {Array<Object>} */
         let filteredPermits = [];
         const MAX_PERMITS_PER_UNIT_PER_MONTH = 7;
 
-        const request = indexedDB.open('ParkingDB', 4);
-
-        request.onupgradeneeded = function(event) {
-            db = event.target.result;
-            if (!db.objectStoreNames.contains('permits')) {
-                const permitStore = db.createObjectStore('permits', { keyPath: 'id', autoIncrement: true });
-                permitStore.createIndex('permitNo', 'permitNo', { unique: true });
-                permitStore.createIndex('licensePlate', 'licensePlate', { unique: false });
-                permitStore.createIndex('unitNo', 'unitNo', { unique: false });
-                permitStore.createIndex('issueMonth', 'issueMonth', { unique: false });
-            }
-            if (!db.objectStoreNames.contains('issues')) {
-                db.createObjectStore('issues', { keyPath: 'id', autoIncrement: true });
-            }
-            if (!db.objectStoreNames.contains('updates')) {
-                db.createObjectStore('updates', { keyPath: 'id', autoIncrement: true });
-            }
+        // Utility Functions
+        const formatDate = (date) => date.toISOString().split('T')[0];
+        const parseDate = (dateStr) => new Date(dateStr);
+        const getEndOfDay = (date) => { const d = new Date(date); d.setHours(23, 59, 59, 999); return d; };
+        const displayDate = (dateStr) => {
+            const d = parseDate(dateStr);
+            return `${(d.getMonth() + 1).toString().padStart(2, '0')}/${d.getDate().toString().padStart(2, '0')}/${d.getFullYear()}`;
+        };
+        const getLastDayOfMonth = (date) => {
+            const d = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+            return formatDate(d);
+        };
+        const showLoadingSpinner = () => document.getElementById('loadingSpinner').classList.remove('hidden');
+        const hideLoadingSpinner = () => document.getElementById('loadingSpinner').classList.add('hidden');
+        const showToast = (message, type = 'success') => {
+            const toast = document.getElementById('toast');
+            toast.className = `toast ${type}`;
+            document.getElementById('toastIcon').className = `fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}`;
+            document.getElementById('toastMessage').textContent = message;
+            toast.classList.remove('hidden');
+            setTimeout(() => toast.classList.add('hidden'), 3000);
         };
 
-        request.onsuccess = function(event) {
-            db = event.target.result;
-            loadPermitsFromDB();
-            loadIssuesFromDB();
-            loadUpdatesFromDB();
-            filteredPermits = permits.slice().sort((a, b) => b.id - a.id);
-        };
+        // Database Operations
+        const openDatabase = () => new Promise((resolve, reject) => {
+            const request = indexedDB.open('ParkingDB', 5);
+            request.onupgradeneeded = (event) => {
+                const db = event.target.result;
+                if (!db.objectStoreNames.contains('permits')) {
+                    const store = db.createObjectStore('permits', { keyPath: 'id', autoIncrement: true });
+                    store.createIndex('permitNo', 'permitNo', { unique: true });
+                    store.createIndex('licensePlate', 'licensePlate', { unique: false });
+                    store.createIndex('unitNo', 'unitNo', { unique: false });
+                    store.createIndex('issueMonth', 'issueMonth', { unique: false });
+                }
+                if (!db.objectStoreNames.contains('issues')) {
+                    db.createObjectStore('issues', { keyPath: 'id', autoIncrement: true });
+                }
+                if (!db.objectStoreNames.contains('updates')) {
+                    db.createObjectStore('updates', { keyPath: 'id', autoIncrement: true });
+                }
+            };
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => reject(request.error);
+        });
 
-        request.onerror = function(event) {
-            console.error('IndexedDB error:', event.target.errorCode);
-            showToast(`Database error: ${event.target.errorCode}. Retrying in 5 seconds...`, 'error');
-            setTimeout(() => location.reload(), 5000);
-        };
-
-        // Removed auto-reload to prevent interruptions
-        // Added manual sync option in the dashboard if needed
-
-        // Format date for storage (YYYY-MM-DD)
-        function formatDate(date) {
-            const year = date.getFullYear();
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const day = String(date.getDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`;
-        }
-
-        // Parse date string (YYYY-MM-DD) to Date object in local time
-        function parseDate(dateStr) {
-            const [year, month, day] = dateStr.split('-').map(Number);
-            return new Date(year, month - 1, day);
-        }
-
-        // Get end of day for a date (23:59:59)
-        function getEndOfDay(date) {
-            const endOfDay = new Date(date);
-            endOfDay.setHours(23, 59, 59, 999);
-            return endOfDay;
-        }
-
-        // Format date for display (MM/DD/YYYY)
-        function displayDate(dateStr) {
-            const date = parseDate(dateStr);
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const day = String(date.getDate()).padStart(2, '0');
-            const year = date.getFullYear();
-            return `${month}/${day}/${year}`;
-        }
-
-        function showLoadingSpinner() {
-            document.getElementById('loadingSpinner').classList.remove('hidden');
-        }
-
-        function hideLoadingSpinner() {
-            document.getElementById('loadingSpinner').classList.add('hidden');
-        }
-
-        function loadPermitsFromDB() {
+        const loadPermitsFromDB = async () => {
             showLoadingSpinner();
             try {
                 const transaction = db.transaction(['permits'], 'readonly');
                 const store = transaction.objectStore('permits');
-                const request = store.getAll();
-
-                request.onsuccess = function() {
-                    permits = request.result.length ? request.result.sort((a, b) => b.id - a.id) : [];
-                    // Only add sample data if the database is empty
-                    if (!permits.length) {
-                        const now = new Date();
-                        const samplePermit = { 
-                            id: 1, 
-                            permitNo: "P001", 
-                            unitNo: "1234/A", 
-                            visitorName: "John Doe", 
-                            licensePlate: "ABC123", 
-                            vehicleMake: "Toyota", 
-                            vehicleColor: "Blue", 
-                            issueDate: "2025-03-01", // Hardcode to prevent date shifts
-                            expireDate: "2025-03-31", // Hardcode to prevent date shifts
-                            issueOfficer: "Jagroop", 
-                            issueMonth: "2025-03" 
-                        };
-                        permits.push(samplePermit);
-                        const writeTransaction = db.transaction(['permits'], 'readwrite');
-                        const writeStore = writeTransaction.objectStore('permits');
-                        permits.forEach(permit => writeStore.add(permit));
-                    }
-                    updateDashboardMetrics();
-                    hideLoadingSpinner();
-                };
-
-                request.onerror = function() {
-                    throw new Error('Failed to load permits');
-                };
-            } catch (error) {
-                console.error(error);
-                showToast('Error loading permits. Using fallback data.', 'error');
-                permits = [
-                    { 
-                        id: 1, 
-                        permitNo: "P001", 
-                        unitNo: "1234/A", 
-                        visitorName: "John Doe", 
-                        licensePlate: "ABC123", 
-                        vehicleMake: "Toyota", 
-                        vehicleColor: "Blue", 
-                        issueDate: "2025-03-01", 
-                        expireDate: "2025-03-31", 
-                        issueOfficer: "Jagroop", 
-                        issueMonth: "2025-03" 
-                    }
-                ];
+                permits = await new Promise((resolve, reject) => {
+                    const request = store.getAll();
+                    request.onsuccess = () => resolve(request.result.sort((a, b) => b.id - a.id));
+                    request.onerror = () => reject(request.error);
+                });
+                if (!permits.length) {
+                    const now = new Date();
+                    const sample = {
+                        id: 1, permitNo: "P001", unitNo: "1234/A", visitorName: "John Doe", licensePlate: "ABC123",
+                        vehicleMake: "Toyota", vehicleColor: "Blue", issueDate: "2025-04-01", expireDate: getLastDayOfMonth(now),
+                        issueOfficer: "Jagroop", issueMonth: "2025-04"
+                    };
+                    permits.push(sample);
+                    const writeTransaction = db.transaction(['permits'], 'readwrite');
+                    const writeStore = writeTransaction.objectStore('permits');
+                    await Promise.all(permits.map(p => new Promise((res, rej) => {
+                        const req = writeStore.add(p);
+                        req.onsuccess = res;
+                        req.onerror = () => rej(req.error);
+                    })));
+                }
                 updateDashboardMetrics();
+            } catch (error) {
+                console.error('Error loading permits:', error);
+                showToast('Error loading permits. Using fallback.', 'error');
+                permits = [{ id: 1, permitNo: "P001", unitNo: "1234/A", visitorName: "John Doe", licensePlate: "ABC123", vehicleMake: "Toyota", vehicleColor: "Blue", issueDate: "2025-04-01", expireDate: "2025-04-30", issueOfficer: "Jagroop", issueMonth: "2025-04" }];
+                updateDashboardMetrics();
+            } finally {
                 hideLoadingSpinner();
             }
-        }
+        };
 
-        function loadIssuesFromDB() {
+        const loadIssuesFromDB = async () => {
             showLoadingSpinner();
             try {
                 const transaction = db.transaction(['issues'], 'readonly');
                 const store = transaction.objectStore('issues');
-                const request = store.getAll();
-
-                request.onsuccess = function() {
-                    issues = request.result;
-                    updateDashboardMetrics();
-                    if (isAdmin) loadIssuesTable();
-                    hideLoadingSpinner();
-                };
-
-                request.onerror = function() {
-                    throw new Error('Failed to load issues');
-                };
+                issues = await new Promise((resolve, reject) => {
+                    const request = store.getAll();
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                });
+                updateDashboardMetrics();
+                if (isAdmin()) loadIssuesTable();
             } catch (error) {
-                console.error(error);
+                console.error('Error loading issues:', error);
                 showToast('Error loading issues.', 'error');
+            } finally {
                 hideLoadingSpinner();
             }
-        }
+        };
 
-        function loadUpdatesFromDB() {
+        const loadUpdatesFromDB = async () => {
             showLoadingSpinner();
             try {
                 const transaction = db.transaction(['updates'], 'readonly');
                 const store = transaction.objectStore('updates');
-                const request = store.getAll();
-
-                request.onsuccess = function() {
-                    updates = request.result;
-                    if (!updates.length) {
-                        const updatesList = document.getElementById('updatesList');
-                        const updateItems = updatesList.getElementsByClassName('update-item');
-                        updates = Array.from(updateItems).map((item, index) => ({
-                            id: index + 1,
-                            message: item.querySelector('p').textContent,
-                            createdAt: item.querySelector('span').textContent
-                        }));
-                        const writeTransaction = db.transaction(['updates'], 'readwrite');
-                        const writeStore = writeTransaction.objectStore('updates');
-                        updates.forEach(update => writeStore.add(update));
-                    }
-                    displayUpdates();
-                    hideLoadingSpinner();
-                };
-
-                request.onerror = function() {
-                    throw new Error('Failed to load updates');
-                };
+                updates = await new Promise((resolve, reject) => {
+                    const request = store.getAll();
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                });
+                if (!updates.length) {
+                    const updatesList = document.getElementById('updatesList');
+                    updates = Array.from(updatesList.getElementsByClassName('update-item')).map((item, i) => ({
+                        id: i + 1, message: item.querySelector('p').textContent, createdAt: item.querySelector('span').textContent
+                    }));
+                    const writeTransaction = db.transaction(['updates'], 'readwrite');
+                    const writeStore = writeTransaction.objectStore('updates');
+                    await Promise.all(updates.map(u => new Promise((res, rej) => {
+                        const req = writeStore.add(u);
+                        req.onsuccess = res;
+                        req.onerror = () => rej(req.error);
+                    })));
+                }
+                displayUpdates();
             } catch (error) {
-                console.error(error);
+                console.error('Error loading updates:', error);
                 showToast('Error loading updates.', 'error');
+            } finally {
                 hideLoadingSpinner();
             }
-        }
+        };
 
-        function updateDashboardMetrics() {
+        const updateDashboardMetrics = () => {
             const now = new Date();
             const todayStr = formatDate(now);
-            const totalPermits = permits.length;
-            const todayPermits = permits.filter(p => p.issueDate === todayStr).length;
-            const openIssues = issues.filter(i => i.status !== 'solved').length;
+            const sevenDaysLater = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+            const metrics = {
+                totalPermits: permits.length,
+                todayPermits: permits.filter(p => p.issueDate === todayStr).length,
+                openIssues: issues.filter(i => i.status !== 'solved').length,
+                expiringSoon: permits.filter(p => {
+                    const expireDate = parseDate(p.expireDate);
+                    return expireDate > now && expireDate <= sevenDaysLater;
+                }).length
+            };
+            Object.entries(metrics).forEach(([id, value]) => animateCount(id, value));
+        };
 
-            animateCount('totalPermits', totalPermits);
-            animateCount('todayPermits', todayPermits);
-            animateCount('openIssues', openIssues);
-        }
-
-        function animateCount(elementId, target) {
+        const animateCount = (elementId, target) => {
             const element = document.getElementById(elementId);
             let start = parseInt(element.textContent) || 0;
-            const duration = 1000;
+            const duration = 800;
             const increment = (target - start) / (duration / 60);
             const interval = setInterval(() => {
                 start += increment;
-                if (increment > 0 ? start >= target : start <= target) {
+                if ((increment > 0 && start >= target) || (increment < 0 && start <= target)) {
                     start = target;
                     clearInterval(interval);
                 }
                 element.textContent = Math.round(start);
             }, 60);
-        }
+        };
 
-        function refreshMetrics() {
-            showLoadingSpinner();
-            updateDashboardMetrics();
-            showToast('Metrics refreshed successfully!');
-            hideLoadingSpinner();
-        }
+        const getNextPermitNo = async () => {
+            try {
+                const transaction = db.transaction(['permits'], 'readonly');
+                const store = transaction.objectStore('permits');
+                const index = store.index('permitNo');
+                const cursor = await new Promise((resolve, reject) => {
+                    const request = index.openCursor(null, 'prev');
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                });
+                return cursor ? `P${(parseInt(cursor.value.permitNo.slice(1)) + 1).toString().padStart(3, '0')}` : 'P001';
+            } catch (error) {
+                console.error('Error getting next permit number:', error);
+                return 'P001';
+            }
+        };
 
-        function updatePermitNo() {
-            const permitNo = `P${getNextPermitNo()}`;
-            document.getElementById('permitNo').value = permitNo;
+        const updatePermitNo = async () => {
             const now = new Date();
+            document.getElementById('permitNo').value = await getNextPermitNo();
             document.getElementById('issueDate').value = formatDate(now);
-            document.getElementById('expireDate').value = formatDate(new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000));
-        }
+            document.getElementById('expireDate').value = getLastDayOfMonth(now); // Set to end of current month
+        };
 
-        function showSection(sectionId) {
+        const showSection = async (sectionId) => {
             document.querySelectorAll('.section').forEach(s => s.classList.add('hidden'));
             document.getElementById(sectionId).classList.remove('hidden');
-            if (sectionId === 'form') {
-                if (!document.getElementById('editPermitId').value) {
-                    updatePermitNo();
-                    document.getElementById('formTitle').textContent = 'Add New Parking Permit';
-                }
+            document.querySelectorAll('.sidebar-menu button').forEach(btn => btn.classList.toggle('active', btn.dataset?.section === sectionId));
+            if (sectionId === 'form' && !document.getElementById('editPermitId').value) {
+                await updatePermitNo();
+                document.getElementById('formTitle').textContent = 'Add New Parking Permit';
             }
             if (sectionId === 'unit-search') {
                 currentPage = 1;
@@ -606,503 +593,398 @@
             }
             if (sectionId === 'report') setupReportSection();
             if (sectionId === 'dashboard') displayUpdates();
-            document.querySelectorAll('.sidebar-menu button').forEach(btn => btn.classList.remove('active'));
-            document.querySelector(`.sidebar-menu button[onclick="showSection('${sectionId}')"]`)?.classList.add('active');
-        }
+        };
 
-        function getNextPermitNo() {
-            if (!permits.length) return "001";
-            const maxPermitNo = Math.max(...permits.map(p => parseInt(p.permitNo.slice(1)) || 0));
-            return String(maxPermitNo + 1).padStart(3, '0');
-        }
-
-        function searchPermits() {
-            try {
-                const query = document.getElementById('searchPermits').value.toLowerCase().trim();
-                filteredPermits = permits.filter(p => 
-                    (p.permitNo || '').toLowerCase().includes(query) ||
-                    (p.unitNo || '').toLowerCase().includes(query) ||
-                    (p.visitorName || '').toLowerCase().includes(query) ||
-                    (p.licensePlate || '').toLowerCase().includes(query) ||
-                    (p.vehicleMake || '').toLowerCase().includes(query) ||
-                    (p.vehicleColor || '').toLowerCase().includes(query) ||
-                    (p.issueOfficer || '').toLowerCase().includes(query)
-                ).sort((a, b) => b.id - a.id);
-                currentPage = 1;
-                loadSearchResults();
-            } catch (error) {
-                console.error(error);
-                showToast('Error searching permits.', 'error');
-            }
-        }
-
-        function loadSearchResults() {
-            try {
-                const now = new Date();
-                const start = (currentPage - 1) * ITEMS_PER_PAGE;
-                const end = start + ITEMS_PER_PAGE;
-                const paginatedPermits = filteredPermits.slice(start, end);
-
-                const tableBody = document.getElementById('permitsTableBody');
-                tableBody.innerHTML = paginatedPermits.map(p => {
-                    const issueDate = parseDate(p.issueDate);
-                    const expireDate = parseDate(p.expireDate);
-                    const expireDateEndOfDay = getEndOfDay(expireDate); // Fix: Consider end of day for expiration
-                    return `
-                        <tr>
-                            <td>${highlightText(p.permitNo, document.getElementById('searchPermits').value)}<br><span>${highlightText(p.visitorName, document.getElementById('searchPermits').value)} (${highlightText(p.unitNo, document.getElementById('searchPermits').value)})</span></td>
-                            <td>${highlightText(p.licensePlate, document.getElementById('searchPermits').value)}<br><span>${highlightText(p.vehicleMake, document.getElementById('searchPermits').value)} - ${highlightText(p.vehicleColor, document.getElementById('searchPermits').value)}</span></td>
-                            <td><i class="fas fa-calendar"></i> ${displayDate(p.issueDate)} - ${displayDate(p.expireDate)}</td>
-                            <td>${highlightText(p.issueOfficer, document.getElementById('searchPermits').value)}</td>
-                            <td><span class="status ${expireDateEndOfDay > now ? 'active' : 'expired'}">${expireDateEndOfDay > now ? 'Active' : 'Expired'}</span></td>
-                            <td><button class="btn-primary" onclick="editPermit(${p.id})"><i class="fas fa-edit"></i> Edit</button></td>
-                        </tr>
-                    `;
-                }).join('');
-
-                const tableContainer = document.getElementById('searchResults');
-                tableContainer.classList.toggle('hidden', !paginatedPermits.length);
-
-                const totalPages = Math.ceil(filteredPermits.length / ITEMS_PER_PAGE);
-                document.getElementById('pageInfo').textContent = `Page ${currentPage} of ${totalPages || 1}`;
-                document.getElementById('prevPageBtn').disabled = currentPage === 1;
-                document.getElementById('nextPageBtn').disabled = currentPage === totalPages || totalPages === 0;
-            } catch (error) {
-                console.error(error);
-                showToast('Error loading search results.', 'error');
-            }
-        }
-
-        function highlightText(text, query) {
-            if (!query || !text) return text || '';
-            const regex = new RegExp(`(${query})`, 'gi');
-            return text.replace(regex, '<span class="highlight">$1</span>');
-        }
-
-        function prevPage() {
-            if (currentPage > 1) {
-                currentPage--;
-                loadSearchResults();
-            }
-        }
-
-        function nextPage() {
-            const totalPages = Math.ceil(filteredPermits.length / ITEMS_PER_PAGE);
-            if (currentPage < totalPages) {
-                currentPage++;
-                loadSearchResults();
-            }
-        }
-
-        function clearSearch() {
-            document.getElementById('searchPermits').value = '';
-            document.getElementById('unitSearchInput').value = '';
-            document.getElementById('unitSearchResult').classList.add('hidden');
-            filteredPermits = permits.slice().sort((a, b) => b.id - a.id);
+        const searchPermits = () => {
+            const query = document.getElementById('searchPermits').value.toLowerCase().trim();
+            const filter = document.getElementById('searchFilter').value;
+            filteredPermits = permits.filter(p => {
+                if (!query) return true;
+                const val = filter === 'all' ? Object.values(p).join(' ').toLowerCase() : p[filter]?.toString().toLowerCase();
+                return val?.includes(query);
+            }).sort((a, b) => b.id - a.id);
             currentPage = 1;
             loadSearchResults();
-        }
+        };
 
-        function getCurrentMonth() {
+        const loadSearchResults = () => {
             const now = new Date();
-            return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-        }
+            const start = (currentPage - 1) * ITEMS_PER_PAGE;
+            const end = start + ITEMS_PER_PAGE;
+            const paginated = filteredPermits.slice(start, end);
+            document.getElementById('permitsTableBody').innerHTML = paginated.map(p => `
+                <tr>
+                    <td>${highlightText(p.permitNo)}<br><span>${highlightText(p.visitorName)} (${highlightText(p.unitNo)})</span></td>
+                    <td>${highlightText(p.licensePlate)}<br><span>${highlightText(p.vehicleMake)} - ${highlightText(p.vehicleColor)}</span></td>
+                    <td><i class="fas fa-calendar"></i> ${displayDate(p.issueDate)} - ${displayDate(p.expireDate)}</td>
+                    <td>${highlightText(p.issueOfficer)}</td>
+                    <td><span class="status ${getEndOfDay(parseDate(p.expireDate)) > now ? 'active' : 'expired'}">${getEndOfDay(parseDate(p.expireDate)) > now ? 'Active' : 'Expired'}</span></td>
+                    <td><button class="btn-primary" onclick="editPermit(${p.id})"><i class="fas fa-edit"></i> Edit</button></td>
+                </tr>
+            `).join('');
+            const totalPages = Math.ceil(filteredPermits.length / ITEMS_PER_PAGE) || 1;
+            document.getElementById('searchResults').classList.toggle('hidden', !paginated.length);
+            document.getElementById('pageInfo').textContent = `Page ${currentPage} of ${totalPages}`;
+            document.getElementById('prevPageBtn').disabled = currentPage === 1;
+            document.getElementById('nextPageBtn').disabled = currentPage === totalPages;
+        };
 
-        function checkRemainingPermits() {
+        const highlightText = (text) => {
+            const query = document.getElementById('searchPermits').value;
+            if (!query || !text) return text || '';
+            return text.replace(new RegExp(`(${query})`, 'gi'), '<span class="highlight">$1</span>');
+        };
+
+        const prevPage = () => { if (currentPage > 1) loadSearchResults(currentPage--); };
+        const nextPage = () => { if (currentPage < Math.ceil(filteredPermits.length / ITEMS_PER_PAGE)) loadSearchResults(currentPage++); };
+
+        const clearSearch = () => {
+            document.getElementById('searchPermits').value = '';
+            document.getElementById('unitSearchInput').value = '';
+            document.getElementById('searchFilter').value = 'all';
+            document.getElementById('unitSearchResult').classList.add('hidden');
+            filteredPermits = [...permits].sort((a, b) => b.id - a.id);
+            currentPage = 1;
+            loadSearchResults();
+        };
+
+        const checkRemainingPermits = () => {
             const unitNo = document.getElementById('unitSearchInput').value.toUpperCase();
             const regex = /^\d{4}\/[A-Z]$/;
-            const remainingDiv = document.getElementById('unitSearchResult');
-            const currentMonth = getCurrentMonth();
-
+            const resultDiv = document.getElementById('unitSearchResult');
             if (regex.test(unitNo)) {
-                const monthlyPermits = permits.filter(p => p.unitNo.toUpperCase() === unitNo && p.issueMonth === currentMonth);
-                const remaining = MAX_PERMITS_PER_UNIT_PER_MONTH - monthlyPermits.length;
-                remainingDiv.textContent = `${remaining} permit${remaining !== 1 ? 's' : ''} remaining for ${currentMonth}`;
-                remainingDiv.classList.remove('hidden');
+                const now = new Date();
+                const month = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}`;
+                const count = permits.filter(p => p.unitNo === unitNo && p.issueMonth === month).length;
+                const remaining = MAX_PERMITS_PER_UNIT_PER_MONTH - count;
+                resultDiv.textContent = `${remaining} permit${remaining !== 1 ? 's' : ''} remaining for ${month}`;
+                resultDiv.classList.remove('hidden');
             } else {
-                remainingDiv.classList.add('hidden');
+                resultDiv.classList.add('hidden');
             }
-        }
+        };
 
-        function checkUnit() {
+        const checkUnit = () => {
             const unitNo = document.getElementById('unitNo').value.toUpperCase();
             const regex = /^\d{4}\/[A-Z]$/;
             const remainingDiv = document.getElementById('formRemaining');
             const errorDiv = document.getElementById('formError');
             const submitBtn = document.getElementById('savePermitBtn');
-            const unitInput = document.getElementById('unitNo');
-            const issueDateStr = document.getElementById('issueDate').value;
-            const issueDate = parseDate(issueDateStr);
-            const currentMonth = `${issueDate.getFullYear()}-${String(issueDate.getMonth() + 1).padStart(2, '0')}`;
-            const editPermitId = document.getElementById('editPermitId').value;
+            const issueDate = parseDate(document.getElementById('issueDate').value || formatDate(new Date()));
+            const month = `${issueDate.getFullYear()}-${(issueDate.getMonth() + 1).toString().padStart(2, '0')}`;
+            const editId = document.getElementById('editPermitId').value;
 
             if (regex.test(unitNo)) {
-                const monthlyPermits = permits.filter(p => p.unitNo.toUpperCase() === unitNo && p.issueMonth === currentMonth && (!editPermitId || p.id != editPermitId));
-                const remaining = MAX_PERMITS_PER_UNIT_PER_MONTH - monthlyPermits.length;
-                remainingDiv.textContent = `This unit has ${remaining} permit${remaining !== 1 ? 's' : ''} remaining for ${currentMonth}`;
+                const count = permits.filter(p => p.unitNo === unitNo && p.issueMonth === month && (!editId || p.id != editId)).length;
+                const remaining = MAX_PERMITS_PER_UNIT_PER_MONTH - count;
+                remainingDiv.textContent = `${remaining} permit${remaining !== 1 ? 's' : ''} remaining for ${month}`;
                 remainingDiv.classList.remove('hidden');
-                submitBtn.disabled = remaining <= 0 && !editPermitId;
-                unitInput.classList.remove('invalid');
                 errorDiv.classList.add('hidden');
-                if (remaining <= 0 && !editPermitId) {
-                    errorDiv.textContent = `Monthly permit limit reached for ${currentMonth}`;
+                submitBtn.disabled = remaining <= 0 && !editId;
+                if (remaining <= 0 && !editId) {
+                    errorDiv.textContent = `Permit limit reached for ${month}`;
                     errorDiv.classList.remove('hidden');
                 }
             } else {
                 remainingDiv.classList.add('hidden');
-                submitBtn.disabled = true;
-                errorDiv.textContent = 'Invalid unit number format (e.g., 1234/A)';
+                errorDiv.textContent = 'Invalid unit number (e.g., 1234/A)';
                 errorDiv.classList.remove('hidden');
-                unitInput.classList.add('invalid');
+                submitBtn.disabled = true;
             }
-        }
+        };
 
-        function resetForm() {
+        const resetForm = async () => {
             document.getElementById('permitForm').reset();
             document.getElementById('editPermitId').value = '';
             document.getElementById('formTitle').textContent = 'Add New Parking Permit';
-            updatePermitNo();
+            await updatePermitNo();
             document.getElementById('formError').classList.add('hidden');
             document.getElementById('formRemaining').classList.add('hidden');
             document.getElementById('savePermitBtn').disabled = false;
-            document.querySelectorAll('.form-grid input, .form-grid select').forEach(input => input.classList.remove('invalid'));
-        }
+        };
 
-        function editPermit(permitId) {
+        const editPermit = (permitId) => {
             const permit = permits.find(p => p.id === permitId);
-            if (!permit) {
-                showToast('Permit not found.', 'error');
-                return;
-            }
-
-            document.getElementById('formTitle').textContent = 'Edit Parking Permit';
+            if (!permit) return showToast('Permit not found.', 'error');
             document.getElementById('editPermitId').value = permit.id;
-            document.getElementById('permitNo').value = permit.permitNo;
-            document.getElementById('unitNo').value = permit.unitNo;
-            document.getElementById('visitorName').value = permit.visitorName;
-            document.getElementById('licensePlate').value = permit.licensePlate;
-            document.getElementById('vehicleMake').value = permit.vehicleMake;
-            document.getElementById('vehicleColor').value = permit.vehicleColor;
-            document.getElementById('issueOfficer').value = permit.issueOfficer;
-            document.getElementById('issueDate').value = permit.issueDate;
-            document.getElementById('expireDate').value = permit.expireDate;
-
-            checkUnit(); // Ensure validation is triggered after populating the form
+            document.getElementById('formTitle').textContent = 'Edit Parking Permit';
+            ['permitNo', 'unitNo', 'visitorName', 'licensePlate', 'vehicleMake', 'vehicleColor', 'issueOfficer', 'issueDate', 'expireDate'].forEach(id => {
+                document.getElementById(id).value = permit[id];
+            });
+            checkUnit();
             showSection('form');
-        }
+        };
 
-        function submitPermit(event) {
+        const submitPermit = async (event) => {
             event.preventDefault();
+            const form = document.getElementById('permitForm');
+            const editId = document.getElementById('editPermitId').value;
+            const data = {
+                permitNo: document.getElementById('permitNo').value,
+                unitNo: document.getElementById('unitNo').value.toUpperCase(),
+                visitorName: document.getElementById('visitorName').value.trim(),
+                licensePlate: document.getElementById('licensePlate').value.toUpperCase(),
+                vehicleMake: document.getElementById('vehicleMake').value,
+                vehicleColor: document.getElementById('vehicleColor').value,
+                issueOfficer: document.getElementById('issueOfficer').value,
+                issueDate: document.getElementById('issueDate').value,
+                expireDate: document.getElementById('expireDate').value,
+                issueMonth: `${parseDate(document.getElementById('issueDate').value).getFullYear()}-${(parseDate(document.getElementById('issueDate').value).getMonth() + 1).toString().padStart(2, '0')}`
+            };
+            if (editId) data.id = parseInt(editId);
+
+            if (!form.checkValidity()) return showToast('All fields are required.', 'error');
+            if (!/^\d{4}\/[A-Z]$/.test(data.unitNo)) return showToast('Unit number must be 1234/A format.', 'error');
+            if (data.licensePlate.length > 10) return showToast('License plate max 10 characters.', 'error');
+            if (parseDate(data.issueDate) >= parseDate(data.expireDate)) return showToast('Expire date must be after issue date.', 'error');
+            if (!editId || (editId && permits.find(p => p.id == editId).unitNo !== data.unitNo)) {
+                const count = permits.filter(p => p.unitNo === data.unitNo && p.issueMonth === data.issueMonth && (!editId || p.id != editId)).length;
+                if (count >= MAX_PERMITS_PER_UNIT_PER_MONTH) return showToast(`Permit limit reached for ${data.unitNo} in ${data.issueMonth}.`, 'error');
+            }
+            if (permits.some(p => p.licensePlate === data.licensePlate && getEndOfDay(parseDate(p.expireDate)) > new Date() && (!editId || p.id != editId))) {
+                return showToast(`Active permit exists for ${data.licensePlate}.`, 'error');
+            }
+            if (!confirm(`Confirm ${editId ? 'update' : 'save'} permit for ${data.unitNo}?`)) return;
+
+            showLoadingSpinner();
             try {
-                const editPermitId = document.getElementById('editPermitId').value;
-                const unitNo = document.getElementById('unitNo').value.toUpperCase();
-                const licensePlate = document.getElementById('licensePlate').value.toUpperCase();
-                const issueDateStr = document.getElementById('issueDate').value;
-                const expireDateStr = document.getElementById('expireDate').value;
-                const vehicleMake = document.getElementById('vehicleMake').value;
-                const vehicleColor = document.getElementById('vehicleColor').value;
-                const issueOfficer = document.getElementById('issueOfficer').value;
-                const issueDate = parseDate(issueDateStr);
-                const currentMonth = `${issueDate.getFullYear()}-${String(issueDate.getMonth() + 1).padStart(2, '0')}`;
-
-                const form = document.getElementById('permitForm');
-                let isValid = true;
-                form.querySelectorAll('input[required], select[required]').forEach(input => {
-                    if (!input.value.trim() || (input.tagName === 'SELECT' && input.value === '')) {
-                        input.classList.add('invalid');
-                        isValid = false;
-                    } else {
-                        input.classList.remove('invalid');
-                    }
-                });
-
-                if (!isValid) {
-                    showToast('All required fields must be filled.', 'error');
-                    return;
-                }
-
-                if (!/^\d{4}\/[A-Z]$/.test(unitNo)) {
-                    showToast('Unit number must be in format 1234/A.', 'error');
-                    return;
-                }
-
-                if (licensePlate.length < 1 || licensePlate.length > 10) {
-                    showToast('License plate must be 1-10 characters.', 'error');
-                    return;
-                }
-
-                const expireDate = parseDate(expireDateStr);
-                const expireDateEndOfDay = getEndOfDay(expireDate);
-
-                const originalPermit = editPermitId ? permits.find(p => p.id == editPermitId) : null;
-                if (!editPermitId || (editPermitId && originalPermit.unitNo !== unitNo)) {
-                    const monthlyPermits = permits.filter(p => p.unitNo === unitNo && p.issueMonth === currentMonth && (!editPermitId || p.id != editPermitId));
-                    if (monthlyPermits.length >= MAX_PERMITS_PER_UNIT_PER_MONTH) {
-                        showToast(`Permit limit reached for ${unitNo} in ${currentMonth}.`, 'error');
-                        return;
-                    }
-                }
-
-                const existingPermit = permits.find(p => p.licensePlate === licensePlate && getEndOfDay(parseDate(p.expireDate)) > new Date() && (!editPermitId || p.id != editPermitId));
-                if (existingPermit) {
-                    showToast(`Active permit already exists for ${licensePlate}.`, 'error');
-                    return;
-                }
-
-                if (issueDate >= expireDate) {
-                    showToast('Expire date must be after issue date.', 'error');
-                    return;
-                }
-
-                if (!confirm(`Confirm ${editPermitId ? 'update' : 'save'} permit for ${unitNo}?`)) return;
-
-                const permitData = {
-                    permitNo: document.getElementById('permitNo').value,
-                    unitNo: unitNo,
-                    visitorName: document.getElementById('visitorName').value.trim(),
-                    licensePlate: licensePlate,
-                    vehicleMake: vehicleMake,
-                    vehicleColor: vehicleColor,
-                    issueDate: issueDateStr,
-                    expireDate: expireDateStr,
-                    issueOfficer: issueOfficer,
-                    issueMonth: currentMonth // Ensure issueMonth is updated
-                };
-
-                showLoadingSpinner();
                 const transaction = db.transaction(['permits'], 'readwrite');
                 const store = transaction.objectStore('permits');
-
-                if (editPermitId) {
-                    permitData.id = parseInt(editPermitId);
-                    const request = store.put(permitData);
-
-                    request.onsuccess = function() {
-                        const index = permits.findIndex(p => p.id == editPermitId);
-                        permits[index] = permitData;
-                        permits.sort((a, b) => b.id - a.id);
-                        filteredPermits = permits.slice().sort((a, b) => b.id - a.id);
-                        showSection('unit-search');
-                        updateDashboardMetrics();
-                        showToast('Permit updated successfully!');
-                        resetForm();
-                        hideLoadingSpinner();
-                    };
-
-                    request.onerror = function() {
-                        throw new Error('Failed to update permit');
-                    };
-                } else {
-                    const request = store.add(permitData);
-
-                    request.onsuccess = function() {
-                        permitData.id = request.result;
-                        permits.unshift(permitData);
-                        filteredPermits = permits.slice().sort((a, b) => b.id - a.id);
-                        showSection('permits');
-                        updateDashboardMetrics();
-                        showToast('Permit saved successfully!');
-                        resetForm();
-                        hideLoadingSpinner();
-                    };
-
-                    request.onerror = function() {
-                        throw new Error('Failed to save permit');
-                    };
-                }
+                const request = editId ? store.put(data) : store.add(data);
+                data.id = await new Promise((resolve, reject) => {
+                    request.onsuccess = () => resolve(editId ? data.id : request.result);
+                    request.onerror = () => reject(request.error);
+                });
+                if (editId) permits[permits.findIndex(p => p.id == editId)] = data;
+                else permits.unshift(data);
+                filteredPermits = [...permits].sort((a, b) => b.id - a.id);
+                updateDashboardMetrics();
+                showSection(editId ? 'unit-search' : 'permits');
+                showToast(`Permit ${editId ? 'updated' : 'saved'} successfully!`);
+                await resetForm();
             } catch (error) {
-                console.error(error);
-                showToast('Error processing permit. Please try again.', 'error');
+                console.error('Error saving permit:', error);
+                showToast('Error saving permit.', 'error');
+            } finally {
                 hideLoadingSpinner();
             }
-        }
+        };
 
-        function setupReportSection() {
-            document.getElementById('reportForm').classList.remove('hidden');
-            if (isAdmin) {
-                document.getElementById('adminAuth').classList.add('hidden');
-                document.getElementById('adminIssues').classList.remove('hidden');
-                loadIssuesTable();
-            } else {
-                document.getElementById('adminAuth').classList.remove('hidden');
-                document.getElementById('adminIssues').classList.add('hidden');
-            }
-            updateCharCount();
-        }
+        const setupReportSection = () => {
+            document.getElementById('reportForm').classList.toggle('hidden', isAdmin());
+            document.getElementById('adminAuth').classList.toggle('hidden', isAdmin());
+            document.getElementById('adminIssues').classList.toggle('hidden', !isAdmin());
+            if (isAdmin()) loadIssuesTable();
+            document.getElementById('charCount').textContent = `${document.getElementById('issueDescription').value.length}/500`;
+        };
 
-        function updateCharCount() {
-            const textarea = document.getElementById('issueDescription');
-            const charCount = document.getElementById('charCount');
-            charCount.textContent = `${textarea.value.length}/500`;
-        }
+        const updateCharCount = () => {
+            document.getElementById('charCount').textContent = `${document.getElementById('issueDescription').value.length}/500`;
+        };
 
-        function submitIssue(event) {
+        const submitIssue = async (event) => {
             event.preventDefault();
+            const data = {
+                reportedBy: document.getElementById('reportUsername').value.trim(),
+                description: document.getElementById('issueDescription').value.trim(),
+                status: 'open',
+                createdAt: formatDate(new Date())
+            };
+            if (!data.reportedBy || !data.description) return showToast('Name and description required.', 'error');
+
+            showLoadingSpinner();
             try {
-                const username = document.getElementById('reportUsername').value.trim();
-                const description = document.getElementById('issueDescription').value.trim();
-
-                if (!username || !description) {
-                    showToast('Name and description are required.', 'error');
-                    return;
-                }
-
-                const newIssue = {
-                    reportedBy: username,
-                    description: description,
-                    status: 'open',
-                    createdAt: formatDate(new Date())
-                };
-
-                showLoadingSpinner();
                 const transaction = db.transaction(['issues'], 'readwrite');
                 const store = transaction.objectStore('issues');
-                const request = store.add(newIssue);
-
-                request.onsuccess = function() {
-                    newIssue.id = request.result;
-                    issues.push(newIssue);
-                    document.getElementById('reportUsername').value = '';
-                    document.getElementById('issueDescription').value = '';
-                    updateCharCount();
-                    updateDashboardMetrics();
-                    if (isAdmin) loadIssuesTable();
-                    showToast('Issue reported successfully!');
-                    hideLoadingSpinner();
-                };
-
-                request.onerror = function() {
-                    throw new Error('Failed to report issue');
-                };
+                data.id = await new Promise((resolve, reject) => {
+                    const request = store.add(data);
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                });
+                issues.push(data);
+                document.getElementById('issueForm').reset();
+                updateCharCount();
+                updateDashboardMetrics();
+                if (isAdmin()) loadIssuesTable();
+                showToast('Issue reported successfully!');
             } catch (error) {
-                console.error(error);
+                console.error('Error reporting issue:', error);
                 showToast('Error reporting issue.', 'error');
+            } finally {
                 hideLoadingSpinner();
             }
-        }
+        };
 
-        function loginAsAdmin() {
-            const password = document.getElementById('adminPassword').value;
-            if (password === ADMIN_PASSWORD) {
-                isAdmin = true;
+        const loginAsAdmin = () => {
+            if (document.getElementById('adminPassword').value === ADMIN_PASSWORD) {
                 localStorage.setItem('isAdmin', 'true');
-                document.getElementById('adminAuth').classList.add('hidden');
-                document.getElementById('adminIssues').classList.remove('hidden');
-                loadIssuesTable();
+                setupReportSection();
                 showToast('Admin login successful.');
             } else {
-                showToast('Incorrect admin password.', 'error');
+                showToast('Incorrect password.', 'error');
             }
-        }
+        };
 
-        function loadIssuesTable() {
-            try {
-                const tableBody = document.getElementById('issuesTableBody');
-                tableBody.innerHTML = issues.map(i => `
-                    <tr>
-                        <td>${i.id}</td>
-                        <td>${i.reportedBy}</td>
-                        <td>${i.description}</td>
-                        <td><span class="status ${i.status === 'solved' ? 'active' : 'expired'}">${i.status === 'solved' ? 'Solved' : 'Open'}</span></td>
-                        <td>
-                            ${i.status !== 'solved' ? `<button class="btn-primary" onclick="markIssueSolved(${i.id})"><i class="fas fa-check"></i> Mark as Solved</button>` : ''}
-                        </td>
-                    </tr>
-                `).join('');
-            } catch (error) {
-                console.error(error);
-                showToast('Error loading issues table.', 'error');
-            }
-        }
+        const loadIssuesTable = () => {
+            document.getElementById('issuesTableBody').innerHTML = issues.map(i => `
+                <tr>
+                    <td>${i.id}</td>
+                    <td>${i.reportedBy}</td>
+                    <td>${i.description}</td>
+                    <td><span class="status ${i.status === 'solved' ? 'active' : 'expired'}">${i.status === 'solved' ? 'Solved' : 'Open'}</span></td>
+                    <td>${i.status !== 'solved' ? `<button class="btn-primary" onclick="markIssueSolved(${i.id})"><i class="fas fa-check"></i> Mark as Solved</button>` : ''}</td>
+                </tr>
+            `).join('');
+        };
 
-        function markIssueSolved(issueId) {
+        const markIssueSolved = async (issueId) => {
             const issue = issues.find(i => i.id === issueId);
             if (!issue) return;
-
             issue.status = 'solved';
             showLoadingSpinner();
             try {
                 const transaction = db.transaction(['issues'], 'readwrite');
                 const store = transaction.objectStore('issues');
-                const request = store.put(issue);
-
-                request.onsuccess = function() {
-                    updateDashboardMetrics();
-                    loadIssuesTable();
-                    showToast('Issue marked as solved.');
-                    hideLoadingSpinner();
-                };
-
-                request.onerror = function() {
-                    throw new Error('Failed to mark issue as solved');
-                };
+                await new Promise((resolve, reject) => {
+                    const request = store.put(issue);
+                    request.onsuccess = resolve;
+                    request.onerror = () => reject(request.error);
+                });
+                updateDashboardMetrics();
+                loadIssuesTable();
+                showToast('Issue marked as solved.');
             } catch (error) {
-                console.error(error);
-                showToast('Error marking issue as solved.', 'error');
+                console.error('Error marking issue solved:', error);
+                showToast('Error marking issue solved.', 'error');
+            } finally {
                 hideLoadingSpinner();
             }
-        }
+        };
 
-        function clearSolvedIssues() {
-            if (!confirm('Are you sure you want to clear all solved issues?')) return;
-
+        const clearSolvedIssues = async () => {
+            if (!confirm('Clear all solved issues?')) return;
             showLoadingSpinner();
             try {
-                const unsolvedIssues = issues.filter(i => i.status !== 'solved');
+                const unsolved = issues.filter(i => i.status !== 'solved');
                 const transaction = db.transaction(['issues'], 'readwrite');
                 const store = transaction.objectStore('issues');
-                const clearRequest = store.clear();
-
-                clearRequest.onsuccess = function() {
-                    const reAddTransaction = db.transaction(['issues'], 'readwrite');
-                    const reAddStore = reAddTransaction.objectStore('issues');
-                    unsolvedIssues.forEach(issue => reAddStore.add(issue));
-                    issues = unsolvedIssues;
-                    updateDashboardMetrics();
-                    loadIssuesTable();
-                    showToast('Solved issues cleared successfully.');
-                    hideLoadingSpinner();
-                };
-
-                clearRequest.onerror = function() {
-                    throw new Error('Failed to clear solved issues');
-                };
+                await new Promise((resolve, reject) => {
+                    const request = store.clear();
+                    request.onsuccess = resolve;
+                    request.onerror = () => reject(request.error);
+                });
+                await Promise.all(unsolved.map(i => new Promise((res, rej) => {
+                    const req = transaction.objectStore('issues').add(i);
+                    req.onsuccess = res;
+                    req.onerror = () => rej(req.error);
+                })));
+                issues = unsolved;
+                updateDashboardMetrics();
+                loadIssuesTable();
+                showToast('Solved issues cleared.');
             } catch (error) {
-                console.error(error);
+                console.error('Error clearing solved issues:', error);
                 showToast('Error clearing solved issues.', 'error');
+            } finally {
                 hideLoadingSpinner();
             }
-        }
+        };
 
-        function displayUpdates() {
+        const displayUpdates = () => {
+            document.getElementById('updatesList').innerHTML = updates.length ? updates.map(u => `
+                <div class="update-item">
+                    <p>${u.message}</p>
+                    <span>${u.createdAt}</span>
+                </div>
+            `).join('') : '<p>No updates available.</p>';
+        };
+
+        const exportData = async () => {
+            const data = { permits, issues, updates };
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `RainbowParkingData_${formatDate(new Date())}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('Data exported successfully!');
+        };
+
+        const importData = async (event) => {
+            const file = event.target.files[0];
+            if (!file) return;
+            showLoadingSpinner();
             try {
-                const updatesList = document.getElementById('updatesList');
-                if (updates.length) {
-                    updatesList.innerHTML = updates.map(u => `
-                        <div class="update-item">
-                            <p>${u.message}</p>
-                            <span>${u.createdAt}</span>
-                        </div>
-                    `).join('');
-                } else {
-                    updatesList.innerHTML = '<p>No updates available.</p>';
-                }
+                const text = await file.text();
+                const { permits: newPermits, issues: newIssues, updates: newUpdates } = JSON.parse(text);
+                const transactions = ['permits', 'issues', 'updates'].map(storeName => db.transaction([storeName], 'readwrite'));
+                await Promise.all([
+                    ...newPermits.map(p => new Promise((res, rej) => {
+                        const req = transactions[0].objectStore('permits').put(p);
+                        req.onsuccess = res;
+                        req.onerror = () => rej(req.error);
+                    })),
+                    ...newIssues.map(i => new Promise((res, rej) => {
+                        const req = transactions[1].objectStore('issues').put(i);
+                        req.onsuccess = res;
+                        req.onerror = () => rej(req.error);
+                    })),
+                    ...newUpdates.map(u => new Promise((res, rej) => {
+                        const req = transactions[2].objectStore('updates').put(u);
+                        req.onsuccess = res;
+                        req.onerror = () => rej(req.error);
+                    }))
+                ]);
+                permits = newPermits;
+                issues = newIssues;
+                updates = newUpdates;
+                filteredPermits = [...permits].sort((a, b) => b.id - a.id);
+                updateDashboardMetrics();
+                if (isAdmin()) loadIssuesTable();
+                displayUpdates();
+                showToast('Data imported successfully!');
             } catch (error) {
-                console.error(error);
-                showToast('Error displaying updates.', 'error');
+                console.error('Error importing data:', error);
+                showToast('Error importing data.', 'error');
+            } finally {
+                hideLoadingSpinner();
+                document.getElementById('importFileInput').value = '';
             }
-        }
+        };
 
-        function showToast(message, type = 'success') {
-            const toast = document.getElementById('toast');
-            const toastIcon = document.getElementById('toastIcon');
-            const toastMessage = document.getElementById('toastMessage');
-            toastMessage.textContent = message;
-            toast.className = `toast ${type}`;
-            toastIcon.className = `fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}`;
-            toast.classList.remove('hidden');
-            setTimeout(() => toast.classList.add('hidden'), 3000);
-        }
+        // Initialization
+        (async () => {
+            try {
+                db = await openDatabase();
+                await Promise.all([loadPermitsFromDB(), loadIssuesFromDB(), loadUpdatesFromDB()]);
+                filteredPermits = [...permits].sort((a, b) => b.id - a.id);
+            } catch (error) {
+                console.error('Initialization error:', error);
+                showToast('Failed to initialize. Please refresh.', 'error');
+            }
+        })();
+
+        // Event Listeners
+        document.querySelectorAll('[data-section]').forEach(btn => btn.addEventListener('click', () => showSection(btn.dataset.section)));
+        document.getElementById('refreshMetricsBtn').addEventListener('click', () => { updateDashboardMetrics(); showToast('Metrics refreshed!'); });
+        document.getElementById('permitForm').addEventListener('submit', submitPermit);
+        document.getElementById('unitNo').addEventListener('input', checkUnit);
+        document.getElementById('issueDate').addEventListener('change', checkUnit);
+        document.getElementById('resetFormBtn').addEventListener('click', resetForm);
+        document.getElementById('searchPermits').addEventListener('input', searchPermits);
+        document.getElementById('searchFilter').addEventListener('change', searchPermits);
+        document.getElementById('unitSearchInput').addEventListener('input', checkRemainingPermits);
+        document.getElementById('clearSearchBtn').addEventListener('click', clearSearch);
+        document.getElementById('prevPageBtn').addEventListener('click', prevPage);
+        document.getElementById('nextPageBtn').addEventListener('click', nextPage);
+        document.getElementById('issueForm').addEventListener('submit', submitIssue);
+        document.getElementById('issueDescription').addEventListener('input', updateCharCount);
+        document.getElementById('adminLoginBtn').addEventListener('click', loginAsAdmin);
+        document.getElementById('clearSolvedBtn').addEventListener('click', clearSolvedIssues);
+        document.getElementById('exportDataBtn').addEventListener('click', exportData);
+        document.getElementById('importDataBtn').addEventListener('click', () => document.getElementById('importFileInput').click());
+        document.getElementById('importFileInput').addEventListener('change', importData);
     </script>
 </body>
 </html>
