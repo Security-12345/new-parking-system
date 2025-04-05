@@ -9,195 +9,359 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     <style>
-        /* Apple-inspired design with unique flair */
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro', 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-            background: linear-gradient(135deg, #e6f0fa 0%, #f5e6ff 100%);
+        /* Custom Properties Aligned with Apple’s Design System */
+        :root {
+            /* Apple’s Color Palette */
+            --primary-color: #007aff; /* Apple Blue */
+            --primary-hover: #0062cc;
+            --primary-active: #0051a8;
+            --danger-color: #ff3b30; /* Apple Red */
+            --danger-hover: #cc2f27;
+            --success-color: #34c759; /* Apple Green */
+            --success-hover: #2ba64b;
+            --text-primary: #000000; /* Black for high contrast */
+            --text-secondary: #6e6e73; /* Apple Gray */
+            --text-tertiary: #8e8e93; /* Lighter gray */
+            --text-disabled: #c7c7cc;
+            --bg-primary: rgba(255, 255, 255, 0.96); /* Glass-like white */
+            --bg-secondary: rgba(242, 242, 247, 0.98); /* Subtle gray tint */
+            --bg-header: rgba(255, 255, 255, 0.92); /* Translucent header */
+            --frosted-blur: saturate(180%) blur(20px); /* Simplified glass effect */
+            --shadow-subtle: 0 1px 6px rgba(0, 0, 0, 0.05); /* Lightweight shadow */
+            --shadow-hover: 0 2px 8px rgba(0, 0, 0, 0.06); /* Minimal hover shadow */
+            --border-light: rgba(0, 0, 0, 0.1);
+            --border-subtle: rgba(0, 0, 0, 0.06);
+            --separator: rgba(0, 0, 0, 0.15);
+            --radius-sm: 6px; /* Apple’s smaller radius */
+            --radius-md: 10px; /* Standard Apple radius */
+            --radius-lg: 14px;
+            --radius-xl: 20px;
+            --transition-fast: 0.1s ease-out; /* Faster transitions */
+            --transition-smooth: 0.2s cubic-bezier(0.4, 0, 0.2, 1); /* Apple’s spring-like animation */
+            --gradient-bg: linear-gradient(145deg, #f5f5f7 0%, #ececf1 100%);
+            --highlight-bg: rgba(0, 122, 255, 0.12);
+
+            /* Apple Spacing Scale */
+            --space-xxs: 0.125rem; /* 2px */
+            --space-xs: 0.25rem;   /* 4px */
+            --space-sm: 0.5rem;    /* 8px */
+            --space-md: 1rem;      /* 16px */
+            --space-lg: 1.25rem;   /* 20px */
+            --space-xl: 2rem;      /* 32px */
+        }
+
+        /* Reset and Base Styles */
+        * {
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "SF Pro Text", "SF Pro Display", -apple-system, BlinkMacSystemFont, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body {
+            background: var(--gradient-bg);
+            color: var(--text-primary);
+            line-height: 1.5;
+            min-height: 100vh;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
             display: flex;
             flex-direction: column;
             align-items: center;
-            min-height: 100vh;
+            padding: var(--space-md);
         }
+
+        /* Spinner */
+        .spinner {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2rem;
+            color: var(--primary-color);
+            z-index: 1000;
+            animation: spin 0.6s ease-in-out infinite;
+        }
+
+        .spinner.hidden {
+            display: none;
+        }
+
+        @keyframes spin {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        /* Header Bar */
         .header-bar {
             width: 100%;
             max-width: 1200px;
             display: flex;
             justify-content: flex-end;
-            padding: 10px 20px;
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(10px);
-            border-radius: 10px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            padding: var(--space-sm) var(--space-md);
+            background: var(--bg-header);
+            backdrop-filter: var(--frosted-blur);
+            -webkit-backdrop-filter: var(--frosted-blur);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-md);
+            box-shadow: var(--shadow-subtle);
         }
+
         .header-bar span {
-            font-size: 14px;
+            font-size: 0.875rem;
             font-weight: 600;
-            color: #333;
-            background: linear-gradient(90deg, #007aff, #9b59b6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: var(--text-primary);
         }
+
+        /* Container */
         .container {
             max-width: 1200px;
             width: 100%;
-            background: #ffffff;
-            padding: 30px;
-            border-radius: 18px;
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
-            margin-bottom: 20px;
+            background: var(--bg-primary);
+            backdrop-filter: var(--frosted-blur);
+            -webkit-backdrop-filter: var(--frosted-blur);
+            padding: var(--space-xl);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-subtle);
+            margin-bottom: var(--space-md);
         }
+
         h2 {
             text-align: center;
-            color: #1d1d1f;
-            font-size: 28px;
+            color: var(--text-primary);
+            font-size: clamp(1.5rem, 2.5vw, 1.75rem);
             font-weight: 600;
-            margin-bottom: 20px;
-            background: linear-gradient(90deg, #007aff, #9b59b6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            margin-bottom: var(--space-lg);
         }
+
+        /* Report Form */
         .report-form {
             display: flex;
             justify-content: center;
-            gap: 15px;
-            margin-bottom: 30px;
+            gap: var(--space-md);
+            margin-bottom: var(--space-xl);
             flex-wrap: wrap;
         }
+
         .report-form select {
-            padding: 12px 16px;
-            font-size: 16px;
-            border-radius: 10px;
-            border: 1px solid #d2d2d7;
-            background-color: #f5f5f7;
-            color: #1d1d1f;
+            padding: var(--space-sm) var(--space-md);
+            font-size: 0.9375rem;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-light);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
             appearance: none;
             -webkit-appearance: none;
             -moz-appearance: none;
             background-image: url('data:image/svg+xml;utf8,<svg fill="gray" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
             background-repeat: no-repeat;
-            background-position: right 10px center;
-            transition: all 0.3s ease;
+            background-position: right var(--space-sm) center;
+            transition: border-color var(--transition-smooth);
+            min-width: 200px;
         }
+
         .report-form select:focus {
+            border-color: var(--primary-color);
             outline: none;
-            border-color: #9b59b6;
-            box-shadow: 0 0 0 3px rgba(155, 89, 182, 0.1);
         }
+
         .report-form button {
-            padding: 12px 24px;
-            font-size: 16px;
+            padding: var(--space-sm) var(--space-md);
+            font-size: 0.9375rem;
             font-weight: 500;
-            border-radius: 10px;
+            border-radius: var(--radius-md);
             border: none;
-            background: linear-gradient(145deg, #007aff, #9b59b6);
-            color: #ffffff;
+            background: var(--primary-color);
+            color: #fff;
             cursor: pointer;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 2px 8px rgba(155, 89, 182, 0.2);
+            transition: background var(--transition-smooth), transform var(--transition-fast);
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
         }
+
         .report-form button:hover {
-            background: linear-gradient(145deg, #005bb5, #8e44ad);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(155, 89, 182, 0.3);
+            background: var(--primary-hover);
         }
+
+        .report-form button:active {
+            background: var(--primary-active);
+            transform: scale(0.98);
+        }
+
+        .report-form button:focus {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+
+        /* Table Container */
         .table-container {
-            margin-top: 20px;
+            margin-top: var(--space-md);
             overflow-x: auto;
-            border-radius: 10px;
-            background: #ffffff;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            border-radius: var(--radius-lg);
+            background: var(--bg-primary);
+            backdrop-filter: var(--frosted-blur);
+            -webkit-backdrop-filter: var(--frosted-blur);
+            box-shadow: var(--shadow-subtle);
         }
+
         table {
             width: 100%;
             border-collapse: separate;
             border-spacing: 0;
-            margin-top: 10px;
         }
+
         th, td {
-            padding: 14px 16px;
+            padding: var(--space-sm) var(--space-md);
             text-align: left;
-            border-bottom: 1px solid #e5e5ea;
-            font-size: 14px;
-            color: #1d1d1f;
+            border-bottom: 1px solid var(--separator);
+            font-size: 0.875rem;
+            color: var(--text-primary);
         }
+
         th {
-            background: linear-gradient(145deg, #007aff, #9b59b6);
-            color: #ffffff;
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
             font-weight: 600;
             position: sticky;
             top: 0;
             z-index: 1;
         }
+
         th i {
-            margin-right: 8px;
-            font-size: 12px;
+            margin-right: var(--space-xs);
+            font-size: 0.75rem;
         }
+
         th:first-child {
-            border-top-left-radius: 10px;
+            border-top-left-radius: var(--radius-lg);
         }
+
         th:last-child {
-            border-top-right-radius: 10px;
+            border-top-right-radius: var(--radius-lg);
         }
-        tr {
-            transition: background-color 0.3s ease;
-        }
+
         tr:nth-child(even) {
-            background-color: #f5f5f7;
+            background: rgba(0, 0, 0, 0.02);
         }
+
         tr:hover {
-            background-color: #e5e5ea;
+            background: var(--highlight-bg);
         }
+
+        /* No Data Message */
         .no-data {
             text-align: center;
-            color: #86868b;
-            padding: 20px;
-            font-size: 16px;
+            color: var(--text-secondary);
+            padding: var(--space-md);
+            font-size: 0.9375rem;
         }
+
+        /* Back Button */
         .back-btn {
-            margin-bottom: 20px;
-            padding: 10px 20px;
-            font-size: 16px;
+            margin-bottom: var(--space-md);
+            padding: var(--space-sm) var(--space-md);
+            font-size: 0.9375rem;
             font-weight: 500;
-            border-radius: 10px;
+            border-radius: var(--radius-md);
             border: none;
-            background: #d2d2d7;
-            color: #1d1d1f;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: background var(--transition-smooth), transform var(--transition-fast);
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
         }
+
         .back-btn:hover {
-            background: #c7c7cc;
-            transform: translateY(-2px);
+            background: rgba(0, 0, 0, 0.1);
         }
+
+        .back-btn:active {
+            background: rgba(0, 0, 0, 0.15);
+            transform: scale(0.98);
+        }
+
+        .back-btn:focus {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+
+        /* Error Message */
+        .error-message {
+            padding: var(--space-md);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-md);
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            background: rgba(255, 59, 48, 0.16);
+            color: var(--danger-color);
+            box-shadow: var(--shadow-subtle);
+        }
+
+        .error-message::before {
+            content: "\f06a";
+            font-family: "Font Awesome 5 Free";
+            font-weight: 900;
+        }
+
+        /* Hidden Class */
         .hidden {
             display: none;
+            visibility: hidden;
         }
+
+        /* Responsive Design */
         @media (max-width: 768px) {
             .container {
-                padding: 20px;
+                padding: var(--space-lg);
             }
+
             .report-form {
                 flex-direction: column;
                 align-items: center;
             }
-            .report-form select, .report-form button {
+
+            .report-form select,
+            .report-form button {
                 width: 100%;
                 max-width: 300px;
             }
         }
+
+        /* Performance Optimizations */
+        @supports (will-change: transform) {
+            .report-form button,
+            .back-btn {
+                will-change: transform, opacity;
+                transform: translateZ(0);
+                backface-visibility: hidden;
+            }
+        }
+
+        /* Accessibility Enhancements */
+        :focus-visible {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+        }
     </style>
 </head>
 <body>
-    <button class="back-btn" onclick="window.location.href='index.html'"><i class="fas fa-arrow-left"></i> Back to Main</button>
+    <div class="spinner" id="spinner"></div>
+    <button class="back-btn" onclick="window.location.href='index.html'">
+        <i class="fas fa-arrow-left"></i> Back to Main
+    </button>
     <div class="header-bar">
         <span>Punjab Production</span>
     </div>
     <div class="container">
         <h2>Monthly Permit Report Generator</h2>
+        <div id="errorMessage" class="error-message hidden"></div>
         <div class="report-form">
             <select id="monthSelect" required>
                 <option value="">Select Month</option>
@@ -218,7 +382,9 @@
                 <option value="">Select Year</option>
                 <!-- Years will be populated dynamically -->
             </select>
-            <button onclick="generateReport()"><i class="fas fa-file-pdf"></i> Generate Report</button>
+            <button onclick="generateReport()">
+                <i class="fas fa-file-pdf"></i> Generate Report
+            </button>
         </div>
         <div id="reportTable" class="table-container hidden">
             <table>
@@ -244,34 +410,85 @@
     <script>
         let db;
         let permits = [];
+        const spinner = document.getElementById('spinner');
+        const errorMessage = document.getElementById('errorMessage');
 
-        // Open the same IndexedDB database as the main website
-        const request = indexedDB.open('ParkingDB', 4);
+        // Show spinner
+        function showSpinner() {
+            spinner.classList.remove('hidden');
+        }
 
-        request.onsuccess = function(event) {
-            db = event.target.result;
-            loadPermitsFromDB();
-            populateYearSelect();
-        };
+        // Hide spinner
+        function hideSpinner() {
+            spinner.classList.add('hidden');
+        }
 
-        request.onerror = function(event) {
-            console.error('IndexedDB error:', event.target.errorCode);
-            alert('Failed to connect to the database. Please try again later.');
-        };
+        // Show error message
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.classList.remove('hidden');
+            setTimeout(() => {
+                errorMessage.classList.add('hidden');
+            }, 5000);
+        }
+
+        // Open the IndexedDB database (same version as index.html)
+        if (!window.indexedDB) {
+            showError('IndexedDB is not supported in this browser.');
+        } else {
+            const request = indexedDB.open('ParkingDB', 5); // Match version with index.html
+
+            // Align schema with index.html
+            request.onupgradeneeded = function(event) {
+                db = event.target.result;
+                if (!db.objectStoreNames.contains('permits')) {
+                    const objectStore = db.createObjectStore('permits', { keyPath: 'id', autoIncrement: true });
+                    objectStore.createIndex('permitNo', 'permitNo', { unique: true });
+                    objectStore.createIndex('licensePlate', 'licensePlate', { unique: false });
+                    objectStore.createIndex('unitNo', 'unitNo', { unique: false });
+                    objectStore.createIndex('issueMonth', 'issueMonth', { unique: false });
+                }
+                // Ensure other object stores match index.html
+                if (!db.objectStoreNames.contains('issues')) {
+                    db.createObjectStore('issues', { keyPath: 'id', autoIncrement: true });
+                }
+                if (!db.objectStoreNames.contains('updates')) {
+                    db.createObjectStore('updates', { keyPath: 'id', autoIncrement: true });
+                }
+            };
+
+            request.onsuccess = function(event) {
+                db = event.target.result;
+                loadPermitsFromDB();
+                populateYearSelect();
+            };
+
+            request.onerror = function(event) {
+                console.error('IndexedDB error:', event.target.error);
+                showError('Failed to connect to the database: ' + event.target.error.message);
+                hideSpinner();
+            };
+        }
 
         // Load permits from IndexedDB
         function loadPermitsFromDB() {
+            showSpinner();
             const transaction = db.transaction(['permits'], 'readonly');
             const store = transaction.objectStore('permits');
             const request = store.getAll();
 
             request.onsuccess = function() {
                 permits = request.result;
+                if (permits.length === 0) {
+                    showError('No permits found in the database.');
+                }
+                hideSpinner();
             };
 
             request.onerror = function() {
                 console.error('Error loading permits:', request.error);
-                alert('Error loading permits. Please try again.');
+                showError('Error loading permits: ' + request.error.message);
+                hideSpinner();
             };
         }
 
@@ -305,15 +522,16 @@
         }
 
         // Generate the report
-        function generateReport() {
+        async function generateReport() {
             const month = document.getElementById('monthSelect').value;
             const year = document.getElementById('yearSelect').value;
 
             if (!month || !year) {
-                alert('Please select both a month and a year.');
+                showError('Please select both a month and a year.');
                 return;
             }
 
+            showSpinner();
             const selectedMonth = `${year}-${month}`;
             const filteredPermits = permits.filter(p => p.issueMonth === selectedMonth);
 
@@ -324,6 +542,7 @@
             if (filteredPermits.length === 0) {
                 reportTable.classList.add('hidden');
                 noDataMessage.classList.remove('hidden');
+                hideSpinner();
                 return;
             }
 
@@ -346,11 +565,12 @@
             noDataMessage.classList.add('hidden');
 
             // Generate PDF
-            generatePDF(filteredPermits, selectedMonth);
+            await generatePDF(filteredPermits, selectedMonth);
+            hideSpinner();
         }
 
         // Generate PDF using jsPDF and jsPDF-AutoTable
-        function generatePDF(permits, selectedMonth) {
+        async function generatePDF(permits, selectedMonth) {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
 
@@ -372,10 +592,6 @@
                 doc.setTextColor(220, 220, 220); // Very light gray
                 doc.setGState(new doc.GState({ opacity: 0.1 })); // 10% opacity
                 doc.text('GATEHOUSE', 105, 150, { angle: 45, align: 'center' });
-                // Add a subtle shading effect
-                doc.setGState(new doc.GState({ opacity: 0.05 }));
-                doc.setFillColor(200, 200, 200);
-                doc.rect(0, 0, 210, 297, 'F'); // Subtle background shade
                 doc.setGState(new doc.GState({ opacity: 1 })); // Reset opacity
             };
 
@@ -383,14 +599,14 @@
             addWatermark();
             addHeader();
 
-            // Add report title with gradient effect
+            // Add report title
             doc.setFontSize(16);
             doc.setFont('helvetica', 'bold');
             doc.setTextColor(0, 123, 255);
             doc.text(`Monthly Permit Report - ${selectedMonth}`, 14, 25);
             doc.setLineWidth(0.5);
-            doc.setDrawColor(155, 89, 182); // Purple accent
-            doc.line(14, 27, 70, 27); // Underline with gradient color
+            doc.setDrawColor(0, 123, 255);
+            doc.line(14, 27, 70, 27); // Underline
 
             // Add table
             doc.autoTable({
@@ -419,7 +635,7 @@
                 bodyStyles: {
                     fontSize: 9,
                     textColor: [33, 33, 33],
-                    font: 'times',
+                    font: 'helvetica',
                     halign: 'center'
                 },
                 alternateRowStyles: {
