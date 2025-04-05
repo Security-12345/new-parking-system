@@ -390,16 +390,19 @@
         const MAX_PERMITS_PER_UNIT_PER_MONTH = 7;
 
         // Utility Functions
-        const formatDate = (date) => date.toISOString().split('T')[0];
-        const parseDate = (dateStr) => new Date(dateStr);
-        const getEndOfDay = (date) => { const d = new Date(date); d.setHours(23, 59, 59, 999); return d; };
+        const formatLocalDate = (date) => {
+            const year = date.getFullYear();
+            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+            const day = date.getDate().toString().padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        };
         const displayDate = (dateStr) => {
-            const d = parseDate(dateStr);
-            return `${(d.getMonth() + 1).toString().padStart(2, '0')}/${d.getDate().toString().padStart(2, '0')}/${d.getFullYear()}`;
+            const [year, month, day] = dateStr.split('-');
+            return `${month}/${day}/${year}`;
         };
         const getLastDayOfMonth = (date) => {
             const d = new Date(date.getFullYear(), date.getMonth() + 1, 0);
-            return formatDate(d);
+            return formatLocalDate(d);
         };
         const showLoadingSpinner = () => document.getElementById('loadingSpinner').classList.remove('hidden');
         const hideLoadingSpinner = () => document.getElementById('loadingSpinner').classList.add('hidden');
@@ -449,8 +452,8 @@
                     const now = new Date();
                     const sample = {
                         id: 1, permitNo: "P001", unitNo: "1234/A", visitorName: "John Doe", licensePlate: "ABC123",
-                        vehicleMake: "Toyota", vehicleColor: "Blue", issueDate: "2025-04-01", expireDate: getLastDayOfMonth(now),
-                        issueOfficer: "Jagroop", issueMonth: "2025-04"
+                        vehicleMake: "Toyota", vehicleColor: "Blue", issueDate: formatLocalDate(now), expireDate: getLastDayOfMonth(now),
+                        issueOfficer: "Jagroop", issueMonth: `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}`
                     };
                     permits.push(sample);
                     const writeTransaction = db.transaction(['permits'], 'readwrite');
@@ -465,7 +468,12 @@
             } catch (error) {
                 console.error('Error loading permits:', error);
                 showToast('Error loading permits. Using fallback.', 'error');
-                permits = [{ id: 1, permitNo: "P001", unitNo: "1234/A", visitorName: "John Doe", licensePlate: "ABC123", vehicleMake: "Toyota", vehicleColor: "Blue", issueDate: "2025-04-01", expireDate: "2025-04-30", issueOfficer: "Jagroop", issueMonth: "2025-04" }];
+                const now = new Date();
+                permits = [{
+                    id: 1, permitNo: "P001", unitNo: "1234/A", visitorName: "John Doe", licensePlate: "ABC123",
+                    vehicleMake: "Toyota", vehicleColor: "Blue", issueDate: formatLocalDate(now), expireDate: getLastDayOfMonth(now),
+                    issueOfficer: "Jagroop", issueMonth: `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}`
+                }];
                 updateDashboardMetrics();
             } finally {
                 hideLoadingSpinner();
@@ -526,16 +534,14 @@
 
         const updateDashboardMetrics = () => {
             const now = new Date();
-            const todayStr = formatDate(now);
+            const todayStr = formatLocalDate(now);
             const sevenDaysLater = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+            const sevenDaysLaterStr = formatLocalDate(sevenDaysLater);
             const metrics = {
                 totalPermits: permits.length,
                 todayPermits: permits.filter(p => p.issueDate === todayStr).length,
                 openIssues: issues.filter(i => i.status !== 'solved').length,
-                expiringSoon: permits.filter(p => {
-                    const expireDate = parseDate(p.expireDate);
-                    return expireDate > now && expireDate <= sevenDaysLater;
-                }).length
+                expiringSoon: permits.filter(p => p.expireDate > todayStr && p.expireDate <= sevenDaysLaterStr).length
             };
             Object.entries(metrics).forEach(([id, value]) => animateCount(id, value));
         };
@@ -575,8 +581,8 @@
         const updatePermitNo = async () => {
             const now = new Date();
             document.getElementById('permitNo').value = await getNextPermitNo();
-            document.getElementById('issueDate').value = formatDate(now);
-            document.getElementById('expireDate').value = getLastDayOfMonth(now); // Set to end of current month
+            document.getElementById('issueDate').value = formatLocalDate(now);
+            document.getElementById('expireDate').value = getLastDayOfMonth(now);
         };
 
         const showSection = async (sectionId) => {
@@ -608,7 +614,6 @@
         };
 
         const loadSearchResults = () => {
-            const now = new Date();
             const start = (currentPage - 1) * ITEMS_PER_PAGE;
             const end = start + ITEMS_PER_PAGE;
             const paginated = filteredPermits.slice(start, end);
@@ -618,7 +623,7 @@
                     <td>${highlightText(p.licensePlate)}<br><span>${highlightText(p.vehicleMake)} - ${highlightText(p.vehicleColor)}</span></td>
                     <td><i class="fas fa-calendar"></i> ${displayDate(p.issueDate)} - ${displayDate(p.expireDate)}</td>
                     <td>${highlightText(p.issueOfficer)}</td>
-                    <td><span class="status ${getEndOfDay(parseDate(p.expireDate)) > now ? 'active' : 'expired'}">${getEndOfDay(parseDate(p.expireDate)) > now ? 'Active' : 'Expired'}</span></td>
+                    <td><span class="status ${p.expireDate >= formatLocalDate(new Date()) ? 'active' : 'expired'}">${p.expireDate >= formatLocalDate(new Date()) ? 'Active' : 'Expired'}</span></td>
                     <td><button class="btn-primary" onclick="editPermit(${p.id})"><i class="fas fa-edit"></i> Edit</button></td>
                 </tr>
             `).join('');
@@ -670,19 +675,20 @@
             const remainingDiv = document.getElementById('formRemaining');
             const errorDiv = document.getElementById('formError');
             const submitBtn = document.getElementById('savePermitBtn');
-            const issueDate = parseDate(document.getElementById('issueDate').value || formatDate(new Date()));
-            const month = `${issueDate.getFullYear()}-${(issueDate.getMonth() + 1).toString().padStart(2, '0')}`;
+            const issueDateStr = document.getElementById('issueDate').value || formatLocalDate(new Date());
+            const [year, month] = issueDateStr.split('-');
+            const issueMonth = `${year}-${month}`;
             const editId = document.getElementById('editPermitId').value;
 
             if (regex.test(unitNo)) {
-                const count = permits.filter(p => p.unitNo === unitNo && p.issueMonth === month && (!editId || p.id != editId)).length;
+                const count = permits.filter(p => p.unitNo === unitNo && p.issueMonth === issueMonth && (!editId || p.id != editId)).length;
                 const remaining = MAX_PERMITS_PER_UNIT_PER_MONTH - count;
-                remainingDiv.textContent = `${remaining} permit${remaining !== 1 ? 's' : ''} remaining for ${month}`;
+                remainingDiv.textContent = `${remaining} permit${remaining !== 1 ? 's' : ''} remaining for ${issueMonth}`;
                 remainingDiv.classList.remove('hidden');
                 errorDiv.classList.add('hidden');
                 submitBtn.disabled = remaining <= 0 && !editId;
                 if (remaining <= 0 && !editId) {
-                    errorDiv.textContent = `Permit limit reached for ${month}`;
+                    errorDiv.textContent = `Permit limit reached for ${issueMonth}`;
                     errorDiv.classList.remove('hidden');
                 }
             } else {
@@ -729,19 +735,21 @@
                 issueOfficer: document.getElementById('issueOfficer').value,
                 issueDate: document.getElementById('issueDate').value,
                 expireDate: document.getElementById('expireDate').value,
-                issueMonth: `${parseDate(document.getElementById('issueDate').value).getFullYear()}-${(parseDate(document.getElementById('issueDate').value).getMonth() + 1).toString().padStart(2, '0')}`
             };
+            const issueDateStr = data.issueDate;
+            const [year, month] = issueDateStr.split('-');
+            data.issueMonth = `${year}-${month}`;
             if (editId) data.id = parseInt(editId);
 
             if (!form.checkValidity()) return showToast('All fields are required.', 'error');
             if (!/^\d{4}\/[A-Z]$/.test(data.unitNo)) return showToast('Unit number must be 1234/A format.', 'error');
             if (data.licensePlate.length > 10) return showToast('License plate max 10 characters.', 'error');
-            if (parseDate(data.issueDate) >= parseDate(data.expireDate)) return showToast('Expire date must be after issue date.', 'error');
+            if (data.issueDate >= data.expireDate) return showToast('Expire date must be after issue date.', 'error');
             if (!editId || (editId && permits.find(p => p.id == editId).unitNo !== data.unitNo)) {
                 const count = permits.filter(p => p.unitNo === data.unitNo && p.issueMonth === data.issueMonth && (!editId || p.id != editId)).length;
                 if (count >= MAX_PERMITS_PER_UNIT_PER_MONTH) return showToast(`Permit limit reached for ${data.unitNo} in ${data.issueMonth}.`, 'error');
             }
-            if (permits.some(p => p.licensePlate === data.licensePlate && getEndOfDay(parseDate(p.expireDate)) > new Date() && (!editId || p.id != editId))) {
+            if (permits.some(p => p.licensePlate === data.licensePlate && p.expireDate >= formatLocalDate(new Date()) && (!editId || p.id != editId))) {
                 return showToast(`Active permit exists for ${data.licensePlate}.`, 'error');
             }
             if (!confirm(`Confirm ${editId ? 'update' : 'save'} permit for ${data.unitNo}?`)) return;
@@ -788,7 +796,7 @@
                 reportedBy: document.getElementById('reportUsername').value.trim(),
                 description: document.getElementById('issueDescription').value.trim(),
                 status: 'open',
-                createdAt: formatDate(new Date())
+                createdAt: formatLocalDate(new Date())
             };
             if (!data.reportedBy || !data.description) return showToast('Name and description required.', 'error');
 
@@ -905,7 +913,7 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `RainbowParkingData_${formatDate(new Date())}.json`;
+            a.download = `RainbowParkingData_${formatLocalDate(new Date())}.json`;
             a.click();
             URL.revokeObjectURL(url);
             showToast('Data exported successfully!');
