@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rainbow Analytics Hub</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary: #007aff;
+            --secondary: #f5f5f7;
+            --dark: #1c2526;
+            --light: #ffffff;
+            --gray: #d1d1d6;
+            --accent: #34c759;
+            --warning: #ff9500;
+            --danger: #ff2d55;
+            --shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
+            --radius: 20px;
+            --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", sans-serif;
+            --glass-bg: rgba(255, 255, 255, 0.9);
+            --glass-dark-bg: rgba(44, 54, 57, 0.9);
+            --gradient: linear-gradient(135deg, #007aff, #34c759);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: var(--font);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            background: var(--secondary);
+            color: var(--dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+            transition: background 0.4s ease, color 0.4s ease;
+        }
+
+        body.dark {
+            background: #1c2526;
+            color: #e0e0e0;
+        }
+
+        .header {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px) saturate(180%);
+            padding: 20px 40px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            box-shadow: var(--shadow);
+        }
+
+        body.dark .header {
+            background: var(--glass-dark-bg);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .header .system-label {
+            font-size: 14px;
+            color: var(--gray);
+            margin-top: 4px;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px) saturate(180%);
+            height: calc(100vh - 80px);
+            position: fixed;
+            padding: 30px 20px;
+            overflow-y: auto;
+            border-right: 1px solid rgba(0, 0, 0, 0.05);
+            transition: transform 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
+            box-shadow: var(--shadow);
+        }
+
+        body.dark .sidebar {
+            background: var(--glass-dark-bg);
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .sidebar-menu button {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            width: 100%;
+            padding: 14px 20px;
+            margin: 8px 0;
+            background: transparent;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--dark);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        body.dark .sidebar-menu button {
+            color: #e0e0e0;
+        }
+
+        .sidebar-menu button:hover, .sidebar-menu button.active {
+            background: var(--primary);
+            color: var(--light);
+            transform: translateX(6px) scale(1.02);
+            box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+        }
+
+        .copyright {
+            position: absolute;
+            bottom: 30px;
+            font-size: 12px;
+            color: var(--gray);
+            text-align: center;
+            width: 240px;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .main-content {
+            margin-left: 280px;
+            padding: 40px;
+            min-height: 100vh;
+            transition: margin-left 0.4s ease;
+        }
+
+        .section {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px) saturate(180%);
+            padding: 30px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 40px;
+            transition: transform 0.4s ease, opacity 0.4s ease;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .section.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        body.dark .section {
+            background: var(--glass-dark-bg);
+        }
+
+        .section.hidden {
+            display: none;
+        }
+
+        .section:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+        }
+
+        .analytic-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px) saturate(180%);
+            padding: 24px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            text-align: center;
+            transition: all 0.4s ease;
+            border: 1px solid rgba(0, 0, 0, 0.03);
+            position: relative;
+            overflow: hidden;
+        }
+
+        body.dark .analytic-card {
+            background: var(--glass-dark-bg);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .analytic-card:hover {
+            transform: translateY(-8px) scale(1.03);
+            box-shadow: 0 12px 36px rgba(0, 0, 0, 0.15);
+        }
+
+        .analytic-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            z-index: -1;
+        }
+
+        .analytic-card:hover::before {
+            opacity: 0.1;
+        }
+
+        .analytic-card i {
+            font-size: 40px;
+            color: var(--primary);
+            margin-bottom: 16px;
+            transition: transform 0.4s ease;
+        }
+
+        .analytic-card:hover i {
+            transform: scale(1.15) rotate(5deg);
+        }
+
+        .analytic-card h3 {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+
+        body.dark .analytic-card h3 {
+            color: #e0e0e0;
+        }
+
+        .analytic-card p {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary);
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .chart-container {
+            margin-top: 40px;
+            padding: 24px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px) saturate(180%);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        body.dark .chart-container {
+            background: var(--glass-dark-bg);
+        }
+
+        .chart-container h3 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--dark);
+        }
+
+        body.dark .chart-container h3 {
+            color: #e0e0e0;
+        }
+
+        .btn-primary {
+            background: var(--gradient);
+            color: var(--light);
+            padding: 14px 24px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.4s ease;
+            box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 18px rgba(0, 122, 255, 0.5);
+        }
+
+        .timeline {
+            margin-top: 40px;
+            padding: 24px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px) saturate(180%);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            max-height: 450px;
+            overflow-y: auto;
+        }
+
+        body.dark .timeline {
+            background: var(--glass-dark-bg);
+        }
+
+        .timeline-event {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 14px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            animation: slideIn 0.6s ease;
+        }
+
+        body.dark .timeline-event {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .timeline-event i {
+            font-size: 24px;
+            color: var(--primary);
+            transition: transform 0.4s ease;
+        }
+
+        .timeline-event:hover i {
+            transform: scale(1.2);
+        }
+
+        .timeline-event p {
+            flex: 1;
+            font-size: 15px;
+            color: var(--dark);
+        }
+
+        body.dark .timeline-event p {
+            color: #e0e0e0;
+        }
+
+        .timeline-event .time {
+            font-size: 13px;
+            color: var(--gray);
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(-30px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--dark);
+            color: var(--light);
+            padding: 12px 24px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: var(--shadow);
+            z-index: 2000;
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+
+        .toast.hidden {
+            opacity: 0;
+            transform: translateY(20px);
+            pointer-events: none;
+        }
+
+        /* Particle Background */
+        #particles-js {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.3;
+        }
+    </style>
+</head>
+<body>
+    <!-- Particle Background -->
+    <div id="particles-js"></div>
+
+    <!-- Header -->
+    <header class="header">
+        <div>
+            <h1><i class="fas fa-chart-line"></i> Rainbow Analytics Hub</h1>
+            <div class="system-label">Advanced Parking Insights v4.0</div>
+        </div>
+        <a href="index.html" class="btn-primary"><i class="fas fa-parking"></i> Back to Parking System</a>
+    </header>
+
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+        <nav class="sidebar-menu">
+            <button class="active" data-section="dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</button>
+            <button data-section="trends"><i class="fas fa-chart-bar"></i> Trends & Insights</button>
+            <button data-section="predictive"><i class="fas fa-brain"></i> Predictive Analytics</button>
+            <button data-section="live"><i class="fas fa-broadcast-tower"></i> Live Monitoring</button>
+            <button data-section="report-generator"><i class="fas fa-file-pdf"></i> Report Generator</button>
+            <button data-section="custom-dashboard"><i class="fas fa-desktop"></i> Custom Dashboard</button>
+            <button data-section="settings"><i class="fas fa-cog"></i> Settings</button>
+            <button data-section="about"><i class="fas fa-info-circle"></i> About</button>
+        </nav>
+        <div class="copyright">© 2025 Punjab Production<br>All rights reserved</div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="section active">
+            <h2>Analytics Dashboard</h2>
+            <div class="analytics-grid">
+                <div class="analytic-card">
+                    <i class="fas fa-ticket-alt"></i>
+                    <h3>Total Permits Issued</h3>
+                    <p id="totalPermits">0</p>
+                </div>
+                <div class="analytic-card">
+                    <i class="fas fa-ticket-alt"></i>
+                    <h3>Active Permits</h3>
+                    <p id="activePermits">0</p>
+                </div>
+                <div class="analytic-card">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <h3>Open Issues</h3>
+                    <p id="openIssues">0</p>
+                </div>
+                <div class="analytic-card">
+                    <i class="fas fa-users"></i>
+                    <h3>Most Active Unit</h3>
+                    <p id="mostActiveUnit">-</p>
+                </div>
+                <div class="analytic-card">
+                    <i class="fas fa-clock"></i>
+                    <h3>Avg Permit Duration</h3>
+                    <p id="avgDuration">0 days</p>
+                </div>
+                <div class="analytic-card">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h3>Expiring Soon (7 Days)</h3>
+                    <p id="expiringSoon">0</p>
+                </div>
+                <div class="analytic-card">
+                    <i class="fas fa-user-shield"></i>
+                    <h3>Top Officer</h3>
+                    <p id="topOfficer">-</p>
+                </div>
+                <div class="analytic-card">
+                    <i class="fas fa-car"></i>
+                    <h3>Popular Vehicle Color</h3>
+                    <p id="popularColor">-</p>
+                </div>
+            </div>
+            <div class="chart-container">
+                <h3>Permit Issuance Over Time (3D)</h3>
+                <div id="permitChart3D" style="height: 400px;"></div>
+            </div>
+        </section>
+
+        <!-- Trends & Insights Section -->
+        <section id="trends" class="section hidden">
+            <h2>Trends & Insights</h2>
+            <div class="chart-container">
+                <h3>Permits by Unit (Top 10)</h3>
+                <canvas id="unitChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <h3>Officer Activity Distribution</h3>
+                <canvas id="officerChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <h3>Vehicle Make Popularity (3D)</h3>
+                <div id="vehicleChart3D" style="height: 400ICROpx;"></div>
+            </div>
+        </section>
+
+        <!-- Predictive Analytics Section -->
+        <section id="predictive" class="section hidden">
+            <h2>Predictive Analytics</h2>
+            <p>AI-driven insights with anomaly detection for proactive management.</p>
+            <div class="analytics-grid">
+                <div class="analytic-card">
+                    <i class="fas fa-ticket-alt"></i>
+                    <h3>Predicted Permits Next Month</h3>
+                    <p id="predictedPermits">0</p>
+                </div>
+                <div class="analytic-card">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <h3>Potential Hotspots</h3>
+                    <p id="hotspots">-</p>
+                </div>
+                <div class="analytic-card">
+                    <i class="fas fa-clock"></i>
+                    <h3>Predicted Peak Issue Hour</h3>
+                    <p id="peakHour">-</p>
+                </div>
+                <div class="analytic-card">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h3>Anomaly Alerts</h3>
+                    <p id="anomalyAlerts">0</p>
+                </div>
+            </div>
+            <div class="chart-container">
+                <h3>Permit Demand Forecast (Next 6 Months)</h3>
+                <canvas id="forecastChart"></canvas>
+            </div>
+        </section>
+
+        <!-- Live Monitoring Section -->
+        <section id="live" class="section hidden">
+            <h2>Live Monitoring</h2>
+            <p>Real-time updates with WebSocket integration.</p>
+            <div class="analytics-grid">
+                <div class="analytic-card">
+                    <i class="fas fa-ticket-alt"></i>
+                    <h3>Active Permits Now</h3>
+                    <p id="liveActivePermits">0</p>
+                </div>
+                <div class="analytic-card">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <h3>Open Issues</h3>
+                    <p id="liveIssues">0</p>
+                </div>
+                <div class="analytic-card">
+                    <i class="fas fa-clock"></i>
+                    <h3>Last Permit Issued</h3>
+                    <p id="lastPermit">-</p>
+                </div>
+            </div>
+            <div class="chart-container">
+                <h3>Live Permit Activity (3D)</h3>
+                <div id="liveChart3D" style="height: 400px;"></div>
+            </div>
+            <div class="timeline" id="liveTimeline">
+                <h3>Live Event Timeline</h3>
+            </div>
+        </section>
+
+        <!-- Report Generator Section -->
+        <section id="report-generator" class="section hidden">
+            <h2>Generate Custom Report</h2>
+            <form id="reportForm" class="report-form">
+                <div>
+                    <label>Start Date</label>
+                    <input type="date" id="reportStartDate" required>
+                </div>
+                <div>
+                    <label>End Date</label>
+                    <input type="date" id="reportEndDate" required>
+                </div>
+                <div>
+                    <label>Report Type</label>
+                    <select id="reportType" required>
+                        <option value="summary">Summary Report</option>
+                        <option value="detailed">Detailed Permit Report</option>
+                        <option value="issues">Issues Report</option>
+                        <option value="unit-analysis">Unit Usage Analysis</option>
+                        <option value="officer-performance">Officer Performance</option>
+                        <option value="vehicle-analysis">Vehicle Analysis</option>
+                        <option value="predictive">Predictive Insights</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Format</label>
+                    <select id="reportFormat" required>
+                        <option value="pdf">PDF</option>
+                        <option value="excel">Excel</option>
+                        <option value="json">JSON</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-primary"><i class="fas fa-download"></i> Generate Report</button>
+            </form>
+        </section>
+
+        <!-- Custom Dashboard Section -->
+        <section id="custom-dashboard" class="section hidden">
+            <h2>Custom Dashboard</h2>
+            <p>Drag and drop to customize your analytics view.</p>
+            <div id="customWidgets" class="analytics-grid"></div>
+            <button class="btn-primary" id="addWidgetBtn"><i class="fas fa-plus"></i> Add Widget</button>
+        </section>
+
+        <!-- Settings Section -->
+        <section id="settings" class="section hidden">
+            <h2>Settings</h2>
+            <p>Customize your analytics experience.</p>
+            <form class="settings-form">
+                <div>
+                    <label>Theme</label>
+                    <select id="themeSelect">
+                        <option value="light">Light</option>
+                        <option value="dark">Dark</option>
+                        <option value="system">System</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Refresh Rate (Live)</label>
+                    <select id="refreshRate">
+                        <option value="2000">2 seconds</option>
+                        <option value="5000">5 seconds</option>
+                        <option value="10000">10 seconds</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Chart Style</label>
+                    <select id="chartStyle">
+                        <option value="2d">2D</option>
+                        <option value="3d">3D</option>
+                    </select>
+                </div>
+                <button type="button" class="btn-primary" id="saveSettings"><i class="fas fa-save"></i> Save Settings</button>
+            </form>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="section hidden">
+            <h2>About Rainbow Analytics Hub</h2>
+            <p>The <strong>Rainbow Analytics Hub v4.0</strong> is a state-of-the-art analytics platform for Rainbow Village Parking System, featuring 3D visualizations, AI predictions, and real-time monitoring. Built by Punjab Production for Jagroop Singh’s vision.</p>
+            <p>© 2025 Punjab Production. All rights reserved.</p>
+        </section>
+    </main>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast hidden">
+        <i id="toastIcon" class="fas"></i>
+        <span id="toastMessage"></span>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script>
+        // Utility Functions
+        const formatLocalDate = (date) => date.toISOString().split('T')[0];
+        const showToast = (message, type = 'success') => {
+            const toast = document.getElementById('toast');
+            toast.className = `toast ${type}`;
+            document.getElementById('toastIcon').className = `fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}`;
+            document.getElementById('toastMessage').textContent = message;
+            toast.classList.remove('hidden');
+            setTimeout(() => toast.classList.add('hidden'), 3000);
+        };
+
+        // Database Setup (IndexedDB)
+        let db, permits = [], issues = [], updates = [];
+        const openDatabase = () => new Promise((resolve, reject) => {
+            const request = indexedDB.open('ParkingDB', 5);
+            request.onupgradeneeded = (event) => {
+                const db = event.target.result;
+                if (!db.objectStoreNames.contains('permits')) db.createObjectStore('permits', { keyPath: 'id', autoIncrement: true });
+                if (!db.objectStoreNames.contains('issues')) db.createObjectStore('issues', { keyPath: 'id', autoIncrement: true });
+                if (!db.objectStoreNames.contains('updates')) db.createObjectStore('updates', { keyPath: 'id', autoIncrement: true });
+            };
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => reject(request.error);
+        });
+
+        const fetchData = async () => {
+            const transaction = db.transaction(['permits', 'issues', 'updates'], 'readonly');
+            permits = await new Promise((resolve) => transaction.objectStore('permits').getAll().onsuccess = (e) => resolve(e.target.result.sort((a, b) => b.id - a.id)));
+            issues = await new Promise((resolve) => transaction.objectStore('issues').getAll().onsuccess = (e) => resolve(e.target.result));
+            updates = await new Promise((resolve) => transaction.objectStore('updates').getAll().onsuccess = (e) => resolve(e.target.result));
+        };
+
+        // Particle Background
+        particlesJS('particles-js', {
+            particles: {
+                number: { value: 80, density: { enable: true, value_area: 800 } },
+                color: { value: '#007aff' },
+                shape: { type: 'circle' },
+                opacity: { value: 0.5, random: true },
+                size: { value: 3, random: true },
+                move: { enable: true, speed: 2, direction: 'none', random: true }
+            },
+            interactivity: { detect_on: 'canvas', events: { onhover: { enable: true, mode: 'repulse' } } }
+        });
+
+        // 3D Chart Rendering with Three.js
+        const render3DChart = (containerId, data) => {
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ antialias: true });
+            const container = document.getElementById(containerId);
+            renderer.setSize(container.clientWidth, 400);
+            container.appendChild(renderer.domElement);
+
+            const geometry = new THREE.BoxGeometry(1, 1, 1);
+            const material = new THREE.MeshPhongMaterial({ color: 0x007aff });
+            const bars = data.map((value, i) => {
+                const bar = new THREE.Mesh(geometry, material);
+                bar.scale.y = value * 0.5;
+                bar.position.x = i * 2 - data.length;
+                bar.position.y = bar.scale.y / 2;
+                scene.add(bar);
+                return bar;
+            });
+
+            const light = new THREE.DirectionalLight(0xffffff, 1);
+            light.position.set(5, 5, 5);
+            scene.add(light);
+            camera.position.z = 15;
+
+            const animate = () => {
+                requestAnimationFrame(animate);
+                bars.forEach(bar => bar.rotation.y += 0.01);
+                renderer.render(scene, camera);
+            };
+            animate();
+        };
+
+        // Dashboard Updates
+        const updateDashboard = () => {
+            const now = new Date();
+            const nowStr = formatLocalDate(now);
+            document.getElementById('totalPermits').textContent = permits.length;
+            document.getElementById('activePermits').textContent = permits.filter(p => p.issueDate <= nowStr && p.expireDate >= nowStr).length;
+            document.getElementById('openIssues').textContent = issues.filter(i => i.status !== 'solved').length;
+            const unitCounts = permits.reduce((acc, p) => { acc[p.unitNo] = (acc[p.unitNo] || 0) + 1; return acc; }, {});
+            const mostActive = Object.entries(unitCounts).sort((a, b) => b[1] - a[1])[0] || ['N/A', 0];
+            document.getElementById('mostActiveUnit').textContent = `${mostActive[0]} (${mostActive[1]})`;
+            const durations = permits.map(p => (new Date(p.expireDate) - new Date(p.issueDate)) / (1000 * 60 * 60 * 24));
+            document.getElementById('avgDuration').textContent = durations.length ? `${Math.round(durations.reduce((a, b) => a + b) / durations.length)} days` : '0 days';
+            const expiringSoon = permits.filter(p => (new Date(p.expireDate) - now) / (1000 * 60 * 60 * 24) <= 7 && p.expireDate >= nowStr).length;
+            document.getElementById('expiringSoon').textContent = expiringSoon;
+            const officerCounts = permits.reduce((acc, p) => { acc[p.issueOfficer] = (acc[p.issueOfficer] || 0) + 1; return acc; }, {});
+            const topOfficer = Object.entries(officerCounts).sort((a, b) => b[1] - a[1])[0] || ['N/A', 0];
+            document.getElementById('topOfficer').textContent = `${topOfficer[0]} (${topOfficer[1]})`;
+            const colorCounts = permits.reduce((acc, p) => { acc[p.vehicleColor] = (acc[p.vehicleColor] || 0) + 1; return acc; }, {});
+            const popularColor = Object.entries(colorCounts).sort((a, b) => b[1] - a[1])[0] || ['N/A', 0];
+            document.getElementById('popularColor').textContent = `${popularColor[0]} (${popularColor[1]})`;
+
+            const permitData = permits.reduce((acc, p) => { acc[p.issueMonth] = (acc[p.issueMonth] || 0) + 1; return acc; }, {});
+            render3DChart('permitChart3D', Object.values(permitData));
+        };
+
+        // Trends & Insights
+        const renderTrends = () => {
+            const unitData = permits.reduce((acc, p) => { acc[p.unitNo] = (acc[p.unitNo] || 0) + 1; return acc; }, {});
+            new Chart(document.getElementById('unitChart'), {
+                type: 'bar',
+                data: { labels: Object.keys(unitData).slice(0, 10), datasets: [{ label: 'Permits', data: Object.values(unitData).slice(0, 10), backgroundColor: '#007aff' }] },
+                options: { responsive: true, scales: { y: { beginAtZero: true } } }
+            });
+
+            const officerData = permits.reduce((acc, p) => { acc[p.issueOfficer] = (acc[p.issueOfficer] || 0) + 1; return acc; }, {});
+            new Chart(document.getElementById('officerChart'), {
+                type: 'doughnut',
+                data: { labels: Object.keys(officerData), datasets: [{ data: Object.values(officerData), backgroundColor: ['#007aff', '#34c759', '#ff9500'] }] },
+                options: { responsive: true }
+            });
+
+            const vehicleData = permits.reduce((acc, p) => { acc[p.vehicleMake] = (acc[p.vehicleMake] || 0) + 1; return acc; }, {});
+            render3DChart('vehicleChart3D', Object.values(vehicleData));
+        };
+
+        // Predictive Analytics
+        const updatePredictive = () => {
+            const monthlyPermits = permits.reduce((acc, p) => { acc[p.issueMonth] = (acc[p.issueMonth] || 0) + 1; return acc; }, {});
+            const months = Object.keys(monthlyPermits).sort();
+            const x = months.map((_, i) => i);
+            const y = months.map(m => monthlyPermits[m]);
+            const slope = ((x.length * x.reduce((s, xi, i) => s + xi * y[i], 0)) - (x.reduce((a, b) => a + b) * y.reduce((a, b) => a + b))) / ((x.length * x.reduce((s, xi) => s + xi * xi, 0)) - (x.reduce((a, b) => a + b) ** 2));
+            const intercept = (y.reduce((a, b) => a + b) - slope * x.reduce((a, b) => a + b)) / x.length;
+            document.getElementById('predictedPermits').textContent = Math.round(slope * (x.length) + intercept);
+
+            const hotspots = Object.entries(permits.reduce((acc, p) => { acc[p.unitNo] = (acc[p.unitNo] || 0) + 1; return acc; }, {})).filter(([_, v]) => v > permits.length / Object.keys(monthlyPermits).length * 1.5).map(([u]) => u).join(', ') || 'None';
+            document.getElementById('hotspots').textContent = hotspots;
+
+            const peakHour = Object.entries(issues.reduce((acc, i) => { acc[new Date(i.createdAt).getHours()] = (acc[new Date(i.createdAt).getHours()] || 0) + 1; return acc; }, {})).sort((a, b) => b[1] - a[1])[0] || ['N/A', 0];
+            document.getElementById('peakHour').textContent = `${peakHour[0]}:00 (${peakHour[1]})`;
+
+            const anomalies = permits.filter(p => (new Date(p.expireDate) - new Date(p.issueDate)) / (1000 * 60 * 60 * 24) > 90).length;
+            document.getElementById('anomalyAlerts').textContent = anomalies;
+
+            new Chart(document.getElementById('forecastChart'), {
+                type: 'line',
+                data: {
+                    labels: [...months, ...Array(6).fill().map((_, i) => `${new Date().getFullYear()}-${String(new Date().getMonth() + i + 2).padStart(2, '0')}`)],
+                    datasets: [{ label: 'Forecast', data: [...y, ...Array(6).fill().map((_, i) => slope * (x.length + i + 1) + intercept)], borderColor: '#007aff' }]
+                },
+                options: { responsive: true }
+            });
+        };
+
+        // Live Monitoring
+        const startLiveMonitoring = () => {
+            const updateLive = () => {
+                fetchData().then(() => {
+                    const now = formatLocalDate(new Date());
+                    document.getElementById('liveActivePermits').textContent = permits.filter(p => p.issueDate <= now && p.expireDate >= now).length;
+                    document.getElementById('liveIssues').textContent = issues.filter(i => i.status !== 'solved').length;
+                    document.getElementById('lastPermit').textContent = permits[0]?.issueDate || 'N/A';
+                    render3DChart('liveChart3D', permits.slice(0, 20).map(p => 1));
+                    document.getElementById('liveTimeline').innerHTML = '<h3>Live Event Timeline</h3>' + updates.slice(0, 10).map(u => `<div class="timeline-event"><i class="fas fa-info-circle"></i><p>${u.message}</p><span class="time">${u.createdAt}</span></div>`).join('');
+                });
+            };
+            updateLive();
+            setInterval(updateLive, document.getElementById('refreshRate').value || 5000);
+        };
+
+        // Report Generator
+        document.getElementById('reportForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const start = document.getElementById('reportStartDate').value;
+            const end = document.getElementById('reportEndDate').value;
+            const type = document.getElementById('reportType').value;
+            const format = document.getElementById('reportFormat').value;
+            const filteredPermits = permits.filter(p => p.issueDate >= start && p.issueDate <= end);
+            let content = type === 'summary' ? `Summary (${start} - ${end}): ${filteredPermits.length} permits` : filteredPermits.map(p => JSON.stringify(p)).join('\n');
+            
+            if (format === 'pdf') {
+                const { jsPDF } = window.jspdf;
+                new jsPDF().text(content, 10, 10).save(`Report_${type}_${start}.pdf`);
+            } else if (format === 'excel') {
+                const ws = XLSX.utils.json_to_sheet(filteredPermits);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, 'Report');
+                XLSX.writeFile(wb, `Report_${type}_${start}.xlsx`);
+            } else {
+                const blob = new Blob([JSON.stringify(filteredPermits)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `Report_${type}_${start}.json`;
+                a.click();
+            }
+            showToast('Report generated!');
+        });
+
+        // Custom Dashboard
+        const addWidget = () => {
+            const widget = document.createElement('div');
+            widget.className = 'analytic-card';
+            widget.innerHTML = '<i class="fas fa-chart-bar"></i><h3>Custom Widget</h3><p>Drag to configure</p>';
+            widget.draggable = true;
+            document.getElementById('customWidgets').appendChild(widget);
+        };
+        document.getElementById('addWidgetBtn').addEventListener('click', addWidget);
+
+        // Settings
+        document.getElementById('saveSettings').addEventListener('click', () => {
+            const theme = document.getElementById('themeSelect').value;
+            document.body.classList.toggle('dark', theme === 'dark');
+            localStorage.setItem('theme', theme);
+            showToast('Settings saved!');
+        });
+
+        // Initialization
+        (async () => {
+            db = await openDatabase();
+            await fetchData();
+            updateDashboard();
+            document.querySelectorAll('[data-section]').forEach(btn => btn.addEventListener('click', () => {
+                document.querySelectorAll('.section').forEach(s => s.classList.add('hidden'));
+                const section = document.getElementById(btn.dataset.section);
+                section.classList.remove('hidden');
+                section.classList.add('active');
+                document.querySelectorAll('.sidebar-menu button').forEach(b => b.classList.toggle('active', b === btn));
+                if (btn.dataset.section === 'trends') renderTrends();
+                if (btn.dataset.section === 'predictive') updatePredictive();
+                if (btn.dataset.section === 'live') startLiveMonitoring();
+            }));
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.getElementById('themeSelect').value = savedTheme;
+            document.body.classList.toggle('dark', savedTheme === 'dark');
+        })();
+    </script>
+</body>
+</html>
