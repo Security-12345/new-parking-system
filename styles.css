@@ -1190,3 +1190,228 @@ tr:hover {
     color: #6e6e73;
     font-size: 0.85rem;
 }
+/* Enhanced Sidebar Menu Visual Feedback */
+.sidebar-menu button.active {
+  font-weight: 600;
+  box-shadow: inset 0 0 0 2px var(--primary-color); /* Subtle inset border for active state */
+}
+
+.sidebar-menu button:hover:not(.active) {
+  background: rgba(0, 122, 255, 0.08); /* Softer hover effect */
+}
+
+/* Improved Metric Card Animation and Accessibility */
+.metric-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.metric-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(0, 122, 255, 0.1) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity var(--transition-smooth);
+}
+
+.metric-card:hover::after {
+  opacity: 1;
+}
+
+.metric-card:focus-within::after {
+  opacity: 0.5; /* Visual feedback for keyboard navigation */
+}
+
+/* Enhanced Navigation Cards with Gradient Borders */
+.nav-card {
+  position: relative;
+}
+
+.nav-card::before {
+  content: '';
+  position: absolute;
+  inset: -2px; /* Slight overlap for a glowing effect */
+  border-radius: var(--radius-lg);
+  padding: 2px;
+  background: linear-gradient(45deg, var(--primary-color), var(--success-color));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity var(--transition-smooth);
+}
+
+.nav-card:hover::before {
+  opacity: 0.3; /* Subtle gradient border on hover */
+}
+
+/* Improved Form Input Feedback */
+.form-container input:focus,
+.form-container select:focus,
+.form-container textarea:focus {
+  box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.2); /* Soft glow effect */
+}
+
+.form-container input:invalid:focus,
+.form-container select:invalid:focus {
+  border-color: var(--danger-color);
+  box-shadow: 0 0 0 3px rgba(255, 59, 48, 0.2); /* Error glow */
+}
+
+/* Enhanced Table Row Interactions */
+tr {
+  transition: background var(--transition-smooth), transform var(--transition-fast);
+}
+
+tr:hover {
+  transform: scale(1.01); /* Slight scale-up for better interactivity */
+}
+
+td .btn-primary {
+  padding: var(--space-xs) var(--space-sm); /* Smaller buttons in table */
+  font-size: 0.8125rem;
+}
+
+/* Improved Pagination Styling */
+.pagination button {
+  box-shadow: var(--shadow-subtle);
+}
+
+.pagination button:hover:not(:disabled) {
+  transform: translateY(-1px); /* Lift effect */
+  box-shadow: var(--shadow-hover);
+}
+
+.pagination span {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  padding: var(--space-xs) var(--space-sm);
+}
+
+/* Enhanced Toast Animation */
+.toast {
+  backdrop-filter: var(--frosted-blur);
+  -webkit-backdrop-filter: var(--frosted-blur);
+}
+
+.toast.success::before,
+.toast.error::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity var(--transition-smooth);
+}
+
+.toast.success:hover::before,
+.toast.error:hover::before {
+  opacity: 1;
+}
+
+/* Improved Updates Section Styling */
+.updates-section {
+  position: relative;
+}
+
+.updates-list::-webkit-scrollbar-thumb {
+  background: var(--primary-color); /* Match theme */
+}
+
+.update-item {
+  transition: background var(--transition-smooth);
+}
+
+.update-item:hover:not(.admin-update) {
+  background: rgba(0, 0, 0, 0.03); /* Subtle hover effect for regular updates */
+}
+
+/* Enhanced Admin Update Styling */
+.updates-section .update-item.admin-update {
+  transition: all var(--transition-smooth); /* Smooth all transitions */
+}
+
+.updates-section .update-item.admin-update::after {
+  content: 'Admin';
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  font-size: 0.6875rem;
+  color: #fff;
+  background: var(--primary-color);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  letter-spacing: 0.02em;
+}
+
+/* Improved Form Actions Button Feedback */
+.form-actions button[type="submit"]:hover {
+  box-shadow: 0 2px 8px rgba(0, 122, 255, 0.3); /* Glow effect */
+}
+
+.form-actions button[type="button"]:first-child:hover { /* Reset */
+  box-shadow: 0 2px 8px rgba(255, 59, 48, 0.3); /* Danger glow */
+}
+
+/* Enhanced Accessibility for Disabled Buttons */
+.btn-primary:disabled,
+.btn-secondary:disabled,
+.form-actions button:disabled {
+  background: var(--text-disabled);
+  color: var(--text-tertiary);
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Improved Responsive Sidebar Menu */
+@media (max-width: 768px) {
+  .sidebar-menu button {
+    justify-content: center;
+    padding: var(--space-sm);
+  }
+
+  .sidebar-menu button i {
+    margin-right: 0; /* Remove gap for icons-only on small screens */
+  }
+
+  .sidebar-menu button span {
+    display: none; /* Hide text on small screens */
+  }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --primary-color: #0a84ff; /* Brighter blue for dark mode */
+    --primary-hover: #40c4ff;
+    --primary-active: #0277bd;
+    --danger-color: #ff453a;
+    --success-color: #30d158;
+    --text-primary: #ffffff;
+    --text-secondary: #8e8e93;
+    --text-tertiary: #6e6e73;
+    --bg-primary: rgba(28, 28, 30, 0.96);
+    --bg-secondary: rgba(44, 44, 46, 0.98);
+    --bg-header: rgba(28, 28, 30, 0.92);
+    --gradient-bg: linear-gradient(145deg, #1c1c1e 0%, #2c2c2e 100%);
+    --highlight-bg: rgba(10, 132, 255, 0.2);
+    --border-light: rgba(255, 255, 255, 0.15);
+    --separator: rgba(255, 255, 255, 0.2);
+  }
+
+  .metric-card p {
+    color: var(--primary-color);
+  }
+
+  .nav-card:nth-child(1) i { color: #5e5ce6; }
+  .nav-card:nth-child(2) i { color: var(--primary-color); }
+  .nav-card:nth-child(3) i { color: var(--danger-color); }
+  .nav-card:nth-child(4) i { color: var(--success-color); }
+}
